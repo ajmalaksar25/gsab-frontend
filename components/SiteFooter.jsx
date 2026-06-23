@@ -1,0 +1,30 @@
+import { GITHUB, PYPI, SITE } from "../lib/links";
+
+export default function SiteFooter() {
+  return (
+    <footer className="foot">
+      <div className="wrap foot__inner">
+        <div className="foot__brand">
+          GSAB
+          <span>Google Sheets as a Backend</span>
+        </div>
+        <nav className="foot__links">
+          <a href="/docs">Docs</a>
+          <a href={PYPI} target="_blank" rel="noreferrer">
+            PyPI
+          </a>
+          <a href={GITHUB} target="_blank" rel="noreferrer">
+            GitHub
+          </a>
+          <a href="/#start">Quickstart</a>
+        </nav>
+        <div className="foot__by">
+          Built by{" "}
+          <a href={SITE} target="_blank" rel="noreferrer">
+            Ajmal Aksar
+          </a>
+        </div>
+      </div>
+    </footer>
+  );
+}

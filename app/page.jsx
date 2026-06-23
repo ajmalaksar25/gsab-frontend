@@ -1,69 +1,95 @@
 import Reveal from "../components/Reveal";
 import CopyButton from "../components/CopyButton";
+import SiteHeader from "../components/SiteHeader";
+import SiteFooter from "../components/SiteFooter";
+import { GITHUB } from "../lib/links";
 
-const GITHUB = "https://github.com/ajmalaksar25/gsab";
-const PYPI = "https://pypi.org/project/gsab/";
-const SITE = "https://ajmalaksar.com";
-
-const cells = [
-  { t: "", cls: "cellx--corner" },
-  { t: "id", cls: "cellx--colhead" },
-  { t: "email", cls: "cellx--colhead" },
-  { t: "secret", cls: "cellx--colhead", lock: true },
-  { t: "1", cls: "cellx--rowhead" },
-  { t: "101", cls: "cellx--val" },
-  { t: "ada@calc.org", cls: "cellx--val" },
-  { t: "••••••", cls: "cellx--enc" },
-  { t: "2", cls: "cellx--rowhead" },
-  { t: "102", cls: "cellx--val" },
-  { t: "alan@enigma.io", cls: "cellx--val" },
-  { t: "••••••", cls: "cellx--enc" },
-  { t: "3", cls: "cellx--rowhead" },
-  { t: "103", cls: "cellx--val" },
-  { t: "grace@navy.mil", cls: "cellx--val" },
-  { t: "••••••", cls: "cellx--enc" },
+/* ---- hero sheet data ---- */
+const FIELDS = ["id", "name", "email", "plan", "secret"];
+const ROWS = [
+  ["101", "Ada Lovelace", "ada@calc.org", "pro", "••••••"],
+  ["102", "Alan Turing", "alan@enigma.io", "free", "••••••"],
+  ["103", "Grace Hopper", "grace@navy.mil", "pro", "••••••"],
+  ["104", "Katherine Johnson", "kj@nasa.gov", "pro", "••••••"],
+  ["105", "Linus Torvalds", "linus@kernel.org", "free", "••••••"],
+  ["106", "Margaret Hamilton", "mh@mit.edu", "team", "••••••"],
 ];
 
-const features = [
+function buildCells() {
+  const letters = ["A", "B", "C", "D", "E"];
+  const out = [{ cls: "gcell gcell--corner", t: "" }];
+  letters.forEach((l) => out.push({ cls: "gcell gcell--colhead", t: l }));
+  out.push({ cls: "gcell gcell--rownum", t: "1" });
+  FIELDS.forEach((f) =>
+    out.push({ cls: "gcell gcell--field", t: f, lock: f === "secret" })
+  );
+  ROWS.forEach((row, ri) => {
+    out.push({ cls: "gcell gcell--rownum", t: String(ri + 2) });
+    row.forEach((v, ci) => {
+      let cls = "gcell gcell--val";
+      if (ci === 4) cls = "gcell gcell--enc";
+      if (ci === 3 && ri === 0) cls = "gcell gcell--val gcell--active";
+      out.push({ cls, t: v });
+    });
+  });
+  return out;
+}
+const CELLS = buildCells();
+
+/* ---- feature tiles ---- */
+const TILES = [
   {
-    coord: "A1",
-    icon: "↵",
-    title: "Sign in, that's it",
-    body: "gsab auth login opens your browser. No Cloud project, no JSON keys to wrangle.",
+    w: 2,
+    glyph: "↵",
+    title: "Sign in once",
+    desc: "Browser sign-in with the minimal drive.file scope — no Cloud project, no JSON keys to wrangle.",
+    chips: ["gsab auth login", "--full", "service account"],
+    href: "/docs#auth",
   },
   {
-    coord: "B1",
-    icon: "▤",
-    title: "Real schemas",
-    body: "Typed fields, validation rules and uniqueness — enforced on every write.",
+    w: 1,
+    glyph: "▤",
+    title: "Typed schemas",
+    desc: "Fields, types, validation rules and uniqueness — enforced on every write.",
+    chips: ["Schema", "Field", "FieldType"],
+    href: "/docs#schema",
   },
   {
-    coord: "C1",
-    icon: "◆",
-    title: "Field encryption",
-    body: "Flag a field as encrypted and GSAB seals it before it ever reaches the sheet.",
-  },
-  {
-    coord: "A2",
-    icon: "⇄",
+    w: 1,
+    glyph: "⇄",
     title: "Async CRUD",
-    body: "insert · read · update · delete, with familiar filter queries.",
+    desc: "The four verbs you expect, with filter queries.",
+    chips: ["insert()", "read()", "update()", "delete()"],
+    href: "/docs#crud",
   },
   {
-    coord: "B2",
-    icon: "❯",
-    title: "A proper CLI",
-    body: "Manage auth and data straight from your terminal — scriptable by design.",
+    w: 2,
+    glyph: "◆",
+    title: "Field encryption",
+    desc: "Flag a field as encrypted and GSAB seals it with Fernet before it ever reaches the sheet.",
+    chips: ["Field(encrypted=True)"],
+    href: "/docs#encryption",
   },
   {
-    coord: "C2",
-    icon: "✦",
+    w: 2,
+    glyph: "❯",
+    title: "Terminal-native CLI",
+    desc: "Manage auth and data straight from your shell — scriptable by design.",
+    chips: ["gsab auth login", "gsab auth status", "gsab version"],
+    href: "/docs#cli",
+  },
+  {
+    w: 1,
+    glyph: "✦",
     title: "Built to grow",
-    body: "An MCP server, a terminal UI and a real-time mode are on the roadmap.",
+    desc: "An MCP server, a terminal UI and a real-time mode are on the roadmap.",
+    chips: ["MCP", "TUI", "real-time"],
+    href: "/docs#roadmap",
   },
 ];
 
 const codeHtml = `<span class="tok-com"># pip install gsab   ·   gsab auth login</span>
+<span class="tok-key">import</span> asyncio
 <span class="tok-key">from</span> gsab <span class="tok-key">import</span> SheetConnection, Schema, Field, FieldType, SheetManager
 
 schema = <span class="tok-fn">Schema</span>(<span class="tok-str">"users"</span>, [
@@ -73,44 +99,20 @@ schema = <span class="tok-fn">Schema</span>(<span class="tok-str">"users"</span>
 ])
 
 <span class="tok-key">async def</span> <span class="tok-fn">main</span>():
-    db = <span class="tok-fn">SheetManager</span>(SheetConnection(), schema)
+    db = <span class="tok-fn">SheetManager</span>(SheetConnection(), schema, encryption_key=KEY)
     <span class="tok-key">await</span> db.<span class="tok-fn">create_sheet</span>(<span class="tok-str">"My App DB"</span>)
     <span class="tok-key">await</span> db.<span class="tok-fn">insert</span>({<span class="tok-str">"id"</span>: 101, <span class="tok-str">"email"</span>: <span class="tok-str">"ada@calc.org"</span>, <span class="tok-str">"secret"</span>: <span class="tok-str">"hunter2"</span>})
-    <span class="tok-mut">print</span>(<span class="tok-key">await</span> db.<span class="tok-fn">read</span>({<span class="tok-str">"id"</span>: 101}))`;
+    <span class="tok-mut">print</span>(<span class="tok-key">await</span> db.<span class="tok-fn">read</span>({<span class="tok-str">"id"</span>: 101}))
+
+asyncio.<span class="tok-fn">run</span>(main())`;
 
 export default function Home() {
   return (
     <>
-      <header className="site-head">
-        <div className="wrap site-head__inner">
-          <a className="brand" href="#top">
-            <span className="brand__mark" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-              <i />
-            </span>
-            GSAB
-          </a>
-          <nav className="site-nav">
-            <a className="hide-sm" href="#start">
-              Quickstart
-            </a>
-            <a className="hide-sm" href="#auth">
-              Auth
-            </a>
-            <a href={GITHUB} target="_blank" rel="noreferrer">
-              GitHub
-            </a>
-            <a className="nav-cta" href={PYPI} target="_blank" rel="noreferrer">
-              PyPI ↗
-            </a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main id="top">
-        {/* hero */}
+        {/* ---------------- hero ---------------- */}
         <section className="hero">
           <div className="wrap hero__grid">
             <div className="hero__copy">
@@ -132,8 +134,8 @@ export default function Home() {
                     →
                   </span>
                 </a>
-                <a className="btn btn--ghost" href={GITHUB} target="_blank" rel="noreferrer">
-                  View on GitHub
+                <a className="btn btn--ghost" href="/docs">
+                  Read the docs
                 </a>
               </div>
               <div className="hero__meta">
@@ -144,21 +146,34 @@ export default function Home() {
             </div>
 
             <div className="hero__visual" aria-hidden="true">
-              <div className="sheet">
-                <div className="sheet__bar">
-                  <span className="sheet__dots">
+              <div className="gs">
+                <div className="gs__chrome">
+                  <span className="gs__dots">
                     <i />
                     <i />
                     <i />
                   </span>
-                  <span className="sheet__title">My App DB · users</span>
-                  <span className="sheet__scope">scope: drive.file</span>
+                  <span className="gs__title">My App DB</span>
+                  <span className="gs__scope">drive.file</span>
                 </div>
-                <div className="sheet__grid">
-                  {cells.map((c, i) => (
-                    <div key={i} className={`cellx ${c.cls}`}>
+                <div className="gs__tabs">
+                  <span className="is-active">users</span>
+                  <span>plans</span>
+                  <span className="gs__tabadd">+</span>
+                </div>
+                <div className="gs__formula">
+                  <span className="gs__fx">fx</span>
+                  <code>{'db.read({ "plan": "pro" })'}</code>
+                </div>
+                <div className="gs__grid">
+                  {CELLS.map((c, i) => (
+                    <div
+                      key={i}
+                      className={c.cls}
+                      style={{ animationDelay: `${0.1 + i * 0.011}s` }}
+                    >
                       {c.t}
-                      {c.lock ? <span className="lock"> ⊟</span> : null}
+                      {c.lock ? <span className="gs__lock"> ⊟</span> : null}
                     </div>
                   ))}
                 </div>
@@ -167,86 +182,93 @@ export default function Home() {
           </div>
         </section>
 
-        {/* features */}
-        <section className="band">
+        {/* ---------------- features (tiles) ---------------- */}
+        <section className="band" id="features">
           <div className="wrap">
             <Reveal className="section-head">
               <span className="eyebrow">What you get</span>
               <h2>A spreadsheet that behaves like a database.</h2>
               <p>
-                Every cell you'd expect from an ORM, mapped onto a surface you already know how
+                Everything you'd reach for in an ORM, mapped onto a surface you already know how
                 to read, share and audit.
               </p>
             </Reveal>
-            <Reveal className="features" delay={80}>
-              {features.map((f) => (
-                <div className="feature" key={f.coord}>
-                  <span className="feature__coord">{f.coord}</span>
-                  <div className="feature__icon" aria-hidden="true">
-                    {f.icon}
+            <Reveal className="tiles" delay={60}>
+              {TILES.map((t) => (
+                <a className={`tile tile--w${t.w}`} key={t.title} href={t.href}>
+                  <span className="tile__bg" aria-hidden="true">
+                    {t.glyph}
+                  </span>
+                  <div className="tile__body">
+                    <h3>{t.title}</h3>
+                    <p>{t.desc}</p>
+                    <div className="tile__chips">
+                      {t.chips.map((c) => (
+                        <code key={c}>{c}</code>
+                      ))}
+                    </div>
                   </div>
-                  <h3>{f.title}</h3>
-                  <p>{f.body}</p>
-                </div>
+                  <div className="tile__foot">
+                    <span className="tile__icon" aria-hidden="true">
+                      {t.glyph}
+                    </span>
+                    <span className="tile__cta">
+                      Docs <span aria-hidden="true">→</span>
+                    </span>
+                  </div>
+                </a>
               ))}
             </Reveal>
           </div>
         </section>
 
-        {/* quickstart */}
+        {/* ---------------- quickstart ---------------- */}
         <section className="band" id="start">
           <div className="wrap">
-            <Reveal className="section-head">
+            <Reveal className="section-head section-head--center">
               <span className="eyebrow">Two-minute start</span>
               <h2>From install to first row.</h2>
               <p>Install it, sign in, define a schema. That's the whole ceremony.</p>
             </Reveal>
-            <div className="start__grid">
-              <Reveal as="ol" className="steps">
-                <li className="step">
-                  <span className="step__n">1</span>
-                  <div>
-                    <h4>Install</h4>
-                    <p>
-                      <code>pip install gsab</code> — one dependency-light package.
-                    </p>
-                  </div>
-                </li>
-                <li className="step">
-                  <span className="step__n">2</span>
-                  <div>
-                    <h4>Sign in</h4>
-                    <p>
-                      <code>gsab auth login</code> opens your browser. GSAB only touches the
-                      sheets it creates.
-                    </p>
-                  </div>
-                </li>
-                <li className="step">
-                  <span className="step__n">3</span>
-                  <div>
-                    <h4>Define &amp; write</h4>
-                    <p>Declare a typed schema and start inserting — validation included.</p>
-                  </div>
-                </li>
-              </Reveal>
 
-              <Reveal className="editor" delay={120}>
-                <div className="editor__bar">
-                  <i />
-                  <i />
-                  <i />
-                  <span className="editor__file">app.py</span>
-                </div>
-                <pre>
-                  <code dangerouslySetInnerHTML={{ __html: codeHtml }} />
-                </pre>
-              </Reveal>
-            </div>
+            <Reveal as="ol" className="steprow" delay={40}>
+              <li className="stepcard">
+                <span className="stepcard__n">01</span>
+                <h4>Install</h4>
+                <p>
+                  <code>pip install gsab</code> — one dependency-light package.
+                </p>
+              </li>
+              <li className="stepcard">
+                <span className="stepcard__n">02</span>
+                <h4>Sign in</h4>
+                <p>
+                  <code>gsab auth login</code> opens your browser. GSAB only touches the sheets
+                  it creates.
+                </p>
+              </li>
+              <li className="stepcard">
+                <span className="stepcard__n">03</span>
+                <h4>Define &amp; write</h4>
+                <p>Declare a typed schema and start inserting — validation included.</p>
+              </li>
+            </Reveal>
+
+            <Reveal className="editor editor--wide" delay={120}>
+              <div className="editor__bar">
+                <i />
+                <i />
+                <i />
+                <span className="editor__file">app.py</span>
+              </div>
+              <pre>
+                <code dangerouslySetInnerHTML={{ __html: codeHtml }} />
+              </pre>
+            </Reveal>
           </div>
         </section>
 
-        {/* auth modes */}
+        {/* ---------------- auth modes ---------------- */}
         <section className="band" id="auth">
           <div className="wrap">
             <Reveal className="section-head">
@@ -288,7 +310,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* closing */}
+        {/* ---------------- closing ---------------- */}
         <section className="closing">
           <div className="wrap">
             <Reveal>
@@ -296,13 +318,16 @@ export default function Home() {
               <h2>
                 Your next backend is <em>one sheet</em> away.
               </h2>
-              <p>Prototype, ship a side project, or back a small app — without standing up a database.</p>
+              <p>
+                Prototype, ship a side project, or back a small app — without standing up a
+                database.
+              </p>
               <div className="closing__cta">
                 <CopyButton text="pip install gsab" />
-                <a className="btn btn--primary" href={GITHUB} target="_blank" rel="noreferrer">
-                  Star on GitHub
+                <a className="btn btn--primary" href="/docs">
+                  Read the docs
                   <span className="btn__arrow" aria-hidden="true">
-                    ★
+                    →
                   </span>
                 </a>
               </div>
@@ -311,30 +336,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="foot">
-        <div className="wrap foot__inner">
-          <div className="foot__brand">
-            GSAB
-            <span>Google Sheets as a Backend</span>
-          </div>
-          <nav className="foot__links">
-            <a href={PYPI} target="_blank" rel="noreferrer">
-              PyPI
-            </a>
-            <a href={GITHUB} target="_blank" rel="noreferrer">
-              GitHub
-            </a>
-            <a href="#start">Quickstart</a>
-            <a href="#auth">Auth</a>
-          </nav>
-          <div className="foot__by">
-            Built by{" "}
-            <a href={SITE} target="_blank" rel="noreferrer">
-              Ajmal Aksar
-            </a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }
