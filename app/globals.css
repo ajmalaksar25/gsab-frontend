@@ -4,9 +4,9 @@
    ============================================================ */
 
 :root {
-  --paper: #fbf9f4;
-  --paper-deep: #f2eee2;
-  --card: #fffdf8;
+  --paper: #f7f6f2;
+  --paper-deep: #ecebe4;
+  --card: #fffffd;
   --ink: #17160f;
   --ink-2: #4d4a40;
   --ink-3: #8a8678;
@@ -40,10 +40,10 @@
 }
 
 [data-theme="dark"] {
-  --paper: #14130d;
-  --paper-deep: #1f1d15;
-  --card: #1c1a12;
-  --ink: #f3efe3;
+  --paper: #101210;
+  --paper-deep: #191b17;
+  --card: #181a16;
+  --ink: #f1efe8;
   --ink-2: #b9b3a2;
   --ink-3: #847f70;
 
