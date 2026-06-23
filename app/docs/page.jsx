@@ -20,6 +20,12 @@ const TOC = [
   { id: "roadmap", label: "Roadmap" },
 ];
 
+const LLM_PROMPT =
+  "Read https://gsab.ajmalaksar.com/llms-full.txt and act as an expert on the GSAB " +
+  "Python library (Google Sheets as a Backend). Help me use it.";
+const ASK_CHATGPT = `https://chatgpt.com/?q=${encodeURIComponent(LLM_PROMPT)}`;
+const ASK_CLAUDE = `https://claude.ai/new?q=${encodeURIComponent(LLM_PROMPT)}`;
+
 function Code({ children }) {
   return (
     <pre className="doc-pre">
@@ -55,6 +61,33 @@ export default function Docs() {
                 methods give you CRUD. Everything below is the current API.
               </p>
             </header>
+
+            <div className="docs__llm">
+              <p className="docs__llm-head">Using an AI assistant or coding IDE?</p>
+              <p>
+                Hand it the whole API — open{" "}
+                <a href="/llms.txt" target="_blank" rel="noopener noreferrer">
+                  llms.txt
+                </a>{" "}
+                (concise) or{" "}
+                <a href="/llms-full.txt" target="_blank" rel="noopener noreferrer">
+                  llms-full.txt
+                </a>{" "}
+                (complete) and paste it into ChatGPT, Claude or your editor — or jump
+                straight in:
+              </p>
+              <div className="docs__llm-btns">
+                <a href={ASK_CHATGPT} target="_blank" rel="noopener noreferrer">
+                  Ask ChatGPT
+                </a>
+                <a href={ASK_CLAUDE} target="_blank" rel="noopener noreferrer">
+                  Ask Claude
+                </a>
+                <a href="/llms-full.txt" target="_blank" rel="noopener noreferrer">
+                  View llms-full.txt
+                </a>
+              </div>
+            </div>
 
             <section id="install" className="doc-sec">
               <h2>Install</h2>

@@ -1,0 +1,286 @@
+# GSAB — Google Sheets as a Backend (complete reference)
+
+GSAB is a Python library and CLI that treats a Google Spreadsheet like a database:
+a tab is a table, a `Schema` gives it types and validation, and async methods give
+you CRUD. It also offers server-side queries (Google Visualization query language),
+field encryption, a pandas bridge, and native in-sheet charts.
+
+- Homepage: https://gsab.ajmalaksar.com
+- Docs: https://gsab.ajmalaksar.com/docs
+- PyPI: https://pypi.org/project/gsab/
+- Source / issues: https://github.com/ajmalaksar25/gsab
+- Python 3.9+
+
+This file is the full documentation in one place — readable by a person or pasteable
+into an LLM / coding tool. Everything below reflects the current API.
+
+---
+
+## Install
+
+```bash
+pip install gsab              # core
+pip install "gsab[pandas]"    # + DataFrame support (to_dataframe / from_dataframe)
+```
+
+## Authentication
+
+**Easy mode (default).** One browser sign-in with the minimal, non-sensitive
+`drive.file` scope. GSAB can then create and manage the sheets it owns — no Google
+Cloud project required from your users.
+
+```bash
+gsab auth login
+```
+
+**DIY mode.** Reach your existing sheets, or bring your own OAuth client.
+
+```bash
+gsab auth login --full                   # access ALL your sheets (broader scope)
+gsab auth login -c client_secret.json    # use your own OAuth client
+```
+
+Check or clear the cached token:
+
+```bash
+gsab auth status      # which credential sources are available
+gsab auth logout      # remove the cached token
+```
+
+**Non-interactive.** The resolver auto-detects, in order: a cached login token →
+gcloud ADC → a service account. Point at a service account with an env var:
+
+```bash
+export GSAB_SERVICE_ACCOUNT=/path/to/service-account.json
+# (GOOGLE_APPLICATION_CREDENTIALS is also honoured)
+```
+
+In code, credentials resolve automatically — or do it yourself:
+
+```python
+from gsab import resolve_credentials
+
+creds = resolve_credentials()        # cached token / ADC / service account
+```
+
+Tokens are stored in your OS keychain (keyring) with a 0600-file fallback.
+
+## Defining a schema
+
+A schema names the tab and declares its fields.
+
+```python
+from gsab import Schema, Field, FieldType
+
+schema = Schema("users", [
+    Field("id",     FieldType.INTEGER, required=True, unique=True),
+    Field("name",   FieldType.STRING,  required=True, max_length=80),
+    Field("email",  FieldType.STRING,  pattern=r"[^@]+@[^@]+\.[^@]+"),
+    Field("age",    FieldType.INTEGER, min_value=0, max_value=150),
+    Field("secret", FieldType.STRING,  encrypted=True),
+])
+```
+
+**FieldType:** `STRING`, `INTEGER`, `FLOAT`, `BOOLEAN`, `DATE`, `DATETIME`, `JSON`,
+`ENCRYPTED`. Values are converted/validated on write and coerced back on read
+(numbers as numbers, dates as date/datetime, etc.).
+
+**Field options:** `required`, `unique`, `default`, `min_length` / `max_length`,
+`pattern`, `min_value` / `max_value`, `encrypted`, and custom `validation_rules`
+(each a `ValidationRule(condition, error_message)`). Validation runs on every write.
+
+## Connecting
+
+`SheetConnection` resolves credentials and builds the API client. With no arguments
+it uses your cached login.
+
+```python
+from gsab import SheetConnection
+
+conn = SheetConnection()                 # easy mode (cached login)
+await conn.connect()
+
+# servers / CI:
+conn = SheetConnection(service_account_file="service-account.json")
+```
+
+## CRUD
+
+A `SheetManager` binds a connection to a schema and gives you async create / read /
+update / delete.
+
+```python
+from gsab import SheetManager
+
+db = SheetManager(conn, schema)
+sheet_id = await db.create_sheet("My App DB")   # creates the spreadsheet, returns its id
+
+await db.insert({"id": 101, "name": "Ada", "email": "ada@calc.org"})
+await db.bulk_insert([{...}, {...}])            # many rows in one append; returns count
+
+# read everything, or filter:
+rows = await db.read()
+rows = await db.read({"plan": "pro"})               # equality
+rows = await db.read({"name": {"$regex": "Ada"}})   # operator
+
+await db.update({"id": 101}, {"plan": "team"})      # returns rows changed
+await db.delete({"plan": "free"})                   # returns rows deleted
+
+await db.delete_sheet()                             # remove the whole spreadsheet
+await db.rename_sheet("New title")
+```
+
+`read()` returns a list of dicts keyed by field name, values in their schema types
+(no internal bookkeeping fields leak out). `update()` and `delete()` return how many
+rows matched. `delete()` uses each row's true sheet index, so duplicate rows are
+handled correctly.
+
+## Querying
+
+`read()` filters support these operators:
+`$eq $ne $gt $gte $lt $lte $in $nin $contains $regex`.
+
+```python
+await db.read({"age": {"$gte": 18}})
+await db.read({"plan": {"$in": ["pro", "team"]}})
+await db.read({"email": {"$contains": "@"}})
+```
+
+For server-side power — filtering, sorting and aggregation that run on Google's
+side, not in Python — use `query()` with the Google Visualization query language.
+Columns are referenced by letter; `column()` maps a field name to its letter.
+
+```python
+rows = await db.query("SELECT A, D WHERE D = 'pro' ORDER BY A DESC LIMIT 10")
+db.column("plan")   # -> "D"
+```
+
+`query()` returns dicts keyed by the sheet's header labels. Columns that map to a
+schema field come back in that field's Python type (and decrypted), matching
+`read()`; aggregates like `SUM(D)` stay in the query language's native form.
+(Server-side filtering on `DATE` columns is not supported yet — filter dates in
+Python via `read()`.)
+
+## pandas bridge
+
+```python
+import pandas as pd
+
+await db.from_dataframe(df)            # insert every row in bulk; returns count
+out = await db.to_dataframe()          # read into a DataFrame
+out = await db.to_dataframe({"plan": "pro"})
+```
+
+Requires `pip install "gsab[pandas]"`.
+
+## Charts
+
+`chart()` embeds a native Google chart in the spreadsheet (no extra dependencies).
+For Python-side plots, hand `to_dataframe()` to matplotlib or Plotly.
+
+```python
+chart_id = await db.chart(x="brand", y="price_eur", kind="COLUMN", title="Price by brand")
+chart_id = await db.chart(x="month", y=["revenue", "cost"], kind="LINE")
+```
+
+`kind`: `COLUMN`, `BAR`, `LINE`, `AREA`, `SCATTER`, `COMBO`, `STEPPED_AREA`, `PIE`.
+`y` may be a single field or a list. Returns the new chart's id.
+
+## Field encryption
+
+Fields flagged `encrypted=True` are sealed with Fernet before they reach the sheet
+and decrypted on read. Pass an `encryption_key` to the manager.
+
+```python
+from cryptography.fernet import Fernet
+
+key = Fernet.generate_key().decode()   # store this safely, e.g. in an env var
+db = SheetManager(conn, schema, encryption_key=key)
+```
+
+Without a key, fields are written as-is — so keep the key out of source control and
+stable across runs, or you won't be able to decrypt old rows.
+
+## Errors & exceptions
+
+Every GSAB exception subclasses `GSABError`, so you can catch one type and read a
+plain-language, actionable message (written to be useful to people and LLM agents).
+
+```python
+from gsab import GSABError, AuthError, NotFoundError, ValidationError
+
+try:
+    await db.query("SELECT bogus")
+except ValidationError as e:
+    ...        # bad query / record / argument (also a ValueError)
+except AuthError as e:
+    ...        # not signed in; message says: run `gsab auth login`
+except GSABError as e:
+    ...        # anything else GSAB-related
+```
+
+| Exception | Meaning / what to do |
+|---|---|
+| `AuthError` | Not authenticated, or the saved session expired/was revoked → run `gsab auth login`. |
+| `ConnectionError` | Could not reach Google (network drop/timeout). Check your connection. |
+| `NotFoundError` | The spreadsheet or tab does not exist. Check the id and tab name. |
+| `PermissionDeniedError` | The account may not access the spreadsheet, or the scope wasn't granted. |
+| `QuotaExceededError` | Rate limit / quota hit. GSAB already retries 429/5xx with backoff; try again later. |
+| `ValidationError` | A record, filter, argument or query was rejected (also a `ValueError`). |
+| `APIError` | An unexpected Google Sheets API error. |
+
+GSAB automatically retries transient failures (429, 5xx, dropped connections,
+timeouts) with exponential backoff before raising.
+
+## CLI reference
+
+```bash
+gsab --help
+
+gsab version
+
+gsab auth login   [--full] [--client-secrets PATH] [--no-browser]
+gsab auth status  [--json]
+gsab auth logout
+```
+
+## Servers & CI
+
+For headless environments, use a service account. Create one in Google Cloud,
+download its key, and **share the target spreadsheet with the service account's
+email** so it can edit.
+
+```bash
+export GSAB_SERVICE_ACCOUNT=/path/to/service-account.json
+python your_app.py     # SheetConnection() picks it up automatically
+```
+
+## API summary
+
+- `Schema(name, fields: list[Field])`
+- `Field(name, field_type, required=True, unique=False, default=None, min_length=None, max_length=None, pattern=None, min_value=None, max_value=None, validation_rules=None, encrypted=False)`
+- `FieldType.{STRING, INTEGER, FLOAT, BOOLEAN, DATE, DATETIME, JSON, ENCRYPTED}`
+- `SheetConnection(credentials_path=None, *, credentials=None, service_account_file=None, scopes=None, interactive=False)` → `await connect()`, `is_connected()`
+- `SheetManager(connection, schema, encryption_key=None)`:
+  - `await create_sheet(title) -> str`
+  - `await insert(data: dict) -> None`
+  - `await bulk_insert(records: list[dict]) -> int`
+  - `await read(filters: dict | None = None) -> list[dict]`
+  - `await update(filters: dict, updates: dict) -> int`
+  - `await delete(filters: dict) -> int`
+  - `await query(sql: str) -> list[dict]`
+  - `column(field_name: str) -> str`
+  - `await to_dataframe(filters=None)` / `await from_dataframe(df) -> int`
+  - `await chart(*, x, y, kind="COLUMN", title="", anchor_col=None) -> int`
+  - `await rename_sheet(new_title) -> None`
+  - `await delete_sheet() -> None`
+- `resolve_credentials(scopes=None, *, service_account_file=None, interactive=False)`
+- `login()`, `logout()`, `status()`
+
+## Roadmap
+
+- MCP server — use your sheets from Claude and other AI tools.
+- Terminal UI — browse tables and rows interactively.
+- Real-time mode — reactive reads, Convex-style.
+- Server-side date filters.
+- One-click hosted sign-in at gsab.ajmalaksar.com.

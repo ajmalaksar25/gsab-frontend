@@ -1020,6 +1020,57 @@ section {
   font-size: 1.05rem;
 }
 
+.docs__llm {
+  margin: 18px 0 4px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--emerald);
+  border-radius: 12px;
+  background: var(--paper-deep);
+}
+
+.docs__llm-head {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 8px;
+}
+
+.docs__llm p:not(.docs__llm-head) {
+  color: var(--ink-2);
+  margin: 0 0 12px;
+  max-width: 64ch;
+}
+
+.docs__llm a {
+  color: var(--emerald-deep);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.docs__llm-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.docs__llm-btns a {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  padding: 8px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.docs__llm-btns a:hover {
+  border-color: var(--emerald);
+  color: var(--emerald-deep);
+}
+
 .doc-sec {
   padding: 34px 0;
   border-top: 1px solid var(--line);
