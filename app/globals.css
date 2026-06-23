@@ -88,7 +88,16 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   transition: background-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+
+/* Sticky footer: main grows so the footer sits at the bottom on short pages
+   (no dead space below it). */
+main {
+  flex: 1 0 auto;
 }
 
 ::selection {
@@ -1150,6 +1159,285 @@ section {
   flex: none;
 }
 
+/* ---------- docs: markdown pages + copy-page control ---------- */
+.docs__nav a.is-active {
+  color: var(--ink);
+  background: var(--paper-deep);
+  border-left-color: var(--emerald);
+}
+
+.docpage__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.copypage {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+}
+
+.copypage__main,
+.copypage__toggle {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.copypage__main {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 8px 0 0 8px;
+  border-right: none;
+}
+
+.copypage__toggle {
+  padding: 7px 9px;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.7rem;
+}
+
+.copypage__main:hover,
+.copypage__toggle:hover,
+.copypage__toggle[aria-expanded="true"] {
+  border-color: var(--emerald);
+  color: var(--emerald-deep);
+}
+
+.copypage__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+}
+
+.copypage__menu > * {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--ink-2);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.copypage__menu > *:hover {
+  background: var(--paper-deep);
+  color: var(--emerald-deep);
+}
+
+.doc-md > :first-child {
+  margin-top: 0;
+}
+
+.doc-md h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  letter-spacing: -0.02em;
+  margin: 4px 0 18px;
+}
+
+.doc-md h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  margin: 38px 0 14px;
+  padding-top: 30px;
+  border-top: 1px solid var(--line);
+}
+
+.doc-md h3 {
+  font-size: 1.18rem;
+  font-weight: 600;
+  margin: 26px 0 10px;
+}
+
+.doc-md p,
+.doc-md li {
+  color: var(--ink-2);
+  max-width: 70ch;
+  line-height: 1.7;
+}
+
+.doc-md p {
+  margin: 12px 0;
+}
+
+.doc-md strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.doc-md a {
+  color: var(--emerald-deep);
+  border-bottom: 1px solid var(--line-strong);
+  overflow-wrap: anywhere;
+}
+
+.doc-md a:hover {
+  border-bottom-color: var(--emerald);
+}
+
+.doc-md ul,
+.doc-md ol {
+  margin: 12px 0;
+  padding-left: 22px;
+}
+
+.doc-md li {
+  margin: 6px 0;
+}
+
+.doc-md code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--paper-deep);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 6px;
+  color: var(--emerald-deep);
+  overflow-wrap: anywhere;
+}
+
+.doc-md pre {
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  margin: 16px 0;
+  box-shadow: var(--shadow-md);
+}
+
+.doc-md pre code {
+  font-family: var(--font-mono);
+  font-size: 0.83rem;
+  line-height: 1.75;
+  color: var(--panel-text);
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Syntax highlighting (rehype-highlight) — matches the hero's Python palette. */
+.doc-md .hljs-comment,
+.doc-md .hljs-quote {
+  color: var(--panel-mute);
+  font-style: italic;
+}
+.doc-md .hljs-keyword,
+.doc-md .hljs-literal,
+.doc-md .hljs-type,
+.doc-md .hljs-name,
+.doc-md .hljs-selector-tag,
+.doc-md .hljs-meta .hljs-keyword {
+  color: #ff9e6d;
+}
+.doc-md .hljs-string,
+.doc-md .hljs-attr,
+.doc-md .hljs-regexp,
+.doc-md .hljs-addition {
+  color: #8fd6a6;
+}
+.doc-md .hljs-title,
+.doc-md .hljs-title.function_,
+.doc-md .hljs-section {
+  color: #e3c98a;
+}
+.doc-md .hljs-built_in,
+.doc-md .hljs-builtin-name,
+.doc-md .hljs-meta {
+  color: var(--panel-mute);
+}
+.doc-md .hljs-number,
+.doc-md .hljs-symbol,
+.doc-md .hljs-bullet {
+  color: #c4b3e8;
+}
+.doc-md .hljs-params {
+  color: var(--panel-text);
+}
+
+.doc-md blockquote {
+  margin: 16px 0;
+  padding: 4px 16px;
+  border-left: 3px solid var(--emerald);
+  background: var(--paper-deep);
+  border-radius: 0 8px 8px 0;
+  color: var(--ink-2);
+}
+
+.doc-md table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.92rem;
+  display: block;
+  overflow-x: auto;
+}
+
+.doc-md th,
+.doc-md td {
+  text-align: left;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.doc-md th {
+  background: var(--paper-deep);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+
+.doc-md td {
+  color: var(--ink-2);
+}
+
+.docpage__pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 44px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+}
+
+.docpage__pager a {
+  color: var(--emerald-deep);
+}
+
+.docpage__pager a:hover {
+  color: var(--ink);
+}
+
 /* ---------- footer ---------- */
 .foot {
   border-top: 1px solid var(--line);
@@ -1281,13 +1569,18 @@ section {
   .doc-sec {
     padding: 26px 0;
   }
-  .doc-pre {
+  .doc-pre,
+  .doc-md pre {
     padding: 14px 14px;
     border-radius: 10px;
   }
-  .doc-pre code {
+  .doc-pre code,
+  .doc-md pre code {
     font-size: 0.78rem;
     line-height: 1.7;
+  }
+  .docpage__top {
+    flex-wrap: wrap;
   }
 }
 

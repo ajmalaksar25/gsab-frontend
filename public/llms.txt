@@ -4,81 +4,23 @@
 > field encryption, async CRUD, and server-side queries. Sign in once with
 > `gsab auth login` — no Google Cloud project required.
 
-GSAB treats a Google Spreadsheet like a database: one tab = one table, a `Schema`
-gives it typed columns and validation, and an async `SheetManager` gives you CRUD
-plus server-side `query()` (Google Visualization query language) and native charts.
-Numbers are stored as numbers, so server-side numeric/sort queries work. Python 3.9+.
+Install: `pip install gsab` (add `pip install "gsab[pandas]"` for DataFrames). Python 3.9+.
 
-Install: `pip install gsab` (add `pip install "gsab[pandas]"` for DataFrame support).
+## Docs
+- [Introduction](https://gsab.ajmalaksar.com/docs/introduction.md): What GSAB is and how it treats a Google Sheet like a database.
+- [Install](https://gsab.ajmalaksar.com/docs/install.md): Install GSAB from PyPI. Python 3.9+.
+- [Authentication](https://gsab.ajmalaksar.com/docs/authentication.md): Sign in once with the minimal drive.file scope — no Cloud project needed. DIY and service-account modes too.
+- [Schemas](https://gsab.ajmalaksar.com/docs/schemas.md): Declare a tab's typed columns, validation rules and uniqueness.
+- [Connecting](https://gsab.ajmalaksar.com/docs/connecting.md): SheetConnection resolves credentials and builds the API client.
+- [CRUD](https://gsab.ajmalaksar.com/docs/crud.md): Async create, read, update, delete — plus bulk insert.
+- [Querying](https://gsab.ajmalaksar.com/docs/querying.md): Rich read() filters, plus server-side query() in the Google Visualization query language.
+- [Charts](https://gsab.ajmalaksar.com/docs/charts.md): Embed native Google charts in the sheet, or plot with matplotlib/Plotly via to_dataframe().
+- [Field encryption](https://gsab.ajmalaksar.com/docs/encryption.md): Seal sensitive fields with Fernet before they reach the sheet.
+- [Errors & exceptions](https://gsab.ajmalaksar.com/docs/errors.md): One exception hierarchy with clear, actionable messages for people and LLM agents.
+- [CLI reference](https://gsab.ajmalaksar.com/docs/cli.md): The gsab command — auth and version, from your shell.
+- [Servers & CI](https://gsab.ajmalaksar.com/docs/servers.md): Use a service account for headless environments.
 
-## Docs & links
-
-- [Full documentation](https://gsab.ajmalaksar.com/docs): install, auth, schemas, CRUD, querying, encryption, CLI
-- [llms-full.txt](https://gsab.ajmalaksar.com/llms-full.txt): the complete docs as one file to paste into an LLM
-- [PyPI](https://pypi.org/project/gsab/): releases
-- [GitHub](https://github.com/ajmalaksar25/gsab): source and issues
-- [Changelog](https://github.com/ajmalaksar25/gsab/blob/master/CHANGELOG.md): version history
-
-## Quickstart
-
-```python
-import asyncio
-from gsab import SheetConnection, SheetManager, Schema, Field, FieldType
-
-schema = Schema("users", [
-    Field("id",    FieldType.INTEGER, required=True, unique=True),
-    Field("name",  FieldType.STRING,  required=True, max_length=80),
-    Field("plan",  FieldType.STRING,  default="free"),
-    Field("price", FieldType.FLOAT),
-])
-
-async def main():
-    db = SheetManager(SheetConnection(), schema)
-    await db.create_sheet("My App DB")                 # creates the spreadsheet
-    await db.insert({"id": 1, "name": "Ada", "plan": "pro", "price": 9.5})
-    rows = await db.read({"plan": "pro"})              # Python-side filter
-    hits = await db.query("SELECT A, D WHERE E > 5")   # server-side query
-    print(rows, hits)
-
-asyncio.run(main())
-```
-
-Authenticate once from the CLI: `gsab auth login` (browser, minimal `drive.file` scope).
-
-## Core API
-
-- `Schema(name, fields)` — names the tab and declares its `Field`s.
-- `Field(name, field_type, required=True, unique=False, default=None, min_length, max_length, pattern, min_value, max_value, validation_rules, encrypted=False)`
-- `FieldType` — `STRING, INTEGER, FLOAT, BOOLEAN, DATE, DATETIME, JSON, ENCRYPTED`.
-- `SheetConnection(credentials_path=None, *, credentials=None, service_account_file=None, scopes=None, interactive=False)` — `await conn.connect()`.
-- `SheetManager(connection, schema, encryption_key=None)`:
-  - `await create_sheet(title) -> str` — create the spreadsheet, return its id.
-  - `await insert(data) -> None` / `await bulk_insert(records) -> int`
-  - `await read(filters=None) -> list[dict]` — filter ops: `$eq $ne $gt $gte $lt $lte $in $nin $contains $regex`.
-  - `await update(filters, updates) -> int` / `await delete(filters) -> int`
-  - `await query(sql) -> list[dict]` — server-side; columns by letter (`column(name)` maps a field to a letter).
-  - `await to_dataframe(filters=None)` / `await from_dataframe(df) -> int` (needs `[pandas]`).
-  - `await chart(*, x, y, kind="COLUMN", title="", anchor_col=None) -> int` — native in-sheet chart (`COLUMN/BAR/LINE/AREA/SCATTER/COMBO/STEPPED_AREA/PIE`).
-  - `await rename_sheet(new_title)` / `await delete_sheet()`
-- `resolve_credentials()`, `login()`, `logout()`, `status()` — auth helpers.
-
-## Errors
-
-Every exception subclasses `GSABError`. Catch `GSABError` for everything, or a specific type:
-
-- `AuthError` — not signed in / token expired or revoked → run `gsab auth login`.
-- `ConnectionError` — could not reach Google (network).
-- `NotFoundError` — spreadsheet or tab does not exist (check the id / tab name).
-- `PermissionDeniedError` — this account may not access the spreadsheet / scope not granted.
-- `QuotaExceededError` — rate-limited; back off and retry (GSAB retries 429/5xx automatically).
-- `ValidationError` — a record, filter, argument or query was rejected (also a `ValueError`).
-- `APIError` — an unexpected Google Sheets API error.
-
-## CLI
-
-```
-gsab auth login   [--full] [--client-secrets PATH] [--no-browser]
-gsab auth status  [--json]
-gsab auth logout
-gsab version
-```
+## More
+- [Full docs as one file](https://gsab.ajmalaksar.com/llms-full.txt)
+- [PyPI](https://pypi.org/project/gsab/)
+- [GitHub](https://github.com/ajmalaksar25/gsab)
