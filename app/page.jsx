@@ -310,11 +310,11 @@ export default function Home() {
             <Reveal className="section-head">
               <span className="eyebrow">Roadmap</span>
               <h2>Built in the open.</h2>
-              <p>What ships in 0.3.0 today, and what&apos;s coming next.</p>
+              <p>What ships in 0.3.1 today, and what&apos;s coming next.</p>
             </Reveal>
             <div className="modes">
               <Reveal className="mode mode--easy">
-                <span className="mode__tag">Shipped · v0.3.0</span>
+                <span className="mode__tag">Shipped · v0.3.1</span>
                 <h3>Available now</h3>
                 <ul className="rm-done">
                   <li>Friction-free auth (drive.file) + CLI</li>
