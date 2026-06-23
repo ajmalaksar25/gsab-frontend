@@ -196,9 +196,6 @@ export default function Home() {
             <Reveal className="tiles" delay={60}>
               {TILES.map((t) => (
                 <a className={`tile tile--w${t.w}`} key={t.title} href={t.href}>
-                  <span className="tile__bg" aria-hidden="true">
-                    {t.glyph}
-                  </span>
                   <div className="tile__body">
                     <h3>{t.title}</h3>
                     <p>{t.desc}</p>
@@ -209,11 +206,8 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="tile__foot">
-                    <span className="tile__icon" aria-hidden="true">
-                      {t.glyph}
-                    </span>
                     <span className="tile__cta">
-                      Docs <span aria-hidden="true">→</span>
+                      Open docs <span aria-hidden="true">→</span>
                     </span>
                   </div>
                 </a>

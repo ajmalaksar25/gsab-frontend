@@ -39,6 +39,33 @@
   --container: 1240px;
 }
 
+[data-theme="dark"] {
+  --paper: #14130d;
+  --paper-deep: #1f1d15;
+  --card: #1c1a12;
+  --ink: #f3efe3;
+  --ink-2: #b9b3a2;
+  --ink-3: #847f70;
+
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.17);
+
+  --emerald: #36b56e;
+  --emerald-deep: #7ed8a4;
+  --emerald-bright: #46c97e;
+  --cell: rgba(54, 181, 110, 0.1);
+
+  --panel: #0e0e09;
+  --panel-2: #17170f;
+  --panel-line: rgba(255, 255, 255, 0.09);
+  --panel-text: #eae7dc;
+  --panel-mute: #94907f;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 12px 32px -16px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 40px 80px -36px rgba(0, 0, 0, 0.65);
+}
+
 *,
 *::before,
 *::after {
@@ -61,10 +88,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
-  background-image: linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
-  background-size: 64px 64px;
-  background-position: center top;
+  transition: background-color 0.3s var(--ease), color 0.3s var(--ease);
 }
 
 ::selection {
@@ -286,6 +310,36 @@ section {
   font-weight: 600;
 }
 
+.themetoggle {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 6px 13px;
+  cursor: pointer;
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.themetoggle:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.themetoggle .t-light {
+  display: none;
+}
+
+[data-theme="dark"] .themetoggle .t-dark {
+  display: none;
+}
+
+[data-theme="dark"] .themetoggle .t-light {
+  display: inline;
+}
+
 /* ---------- hero ---------- */
 .hero {
   padding: clamp(48px, 7vw, 92px) 0 clamp(40px, 6vw, 76px);
@@ -308,7 +362,7 @@ section {
 }
 
 .hero h1 em {
-  font-style: italic;
+  font-style: normal;
   color: var(--emerald);
 }
 
@@ -437,7 +491,6 @@ section {
 .gs__fx {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  font-style: italic;
   color: var(--ink-3);
   border-right: 1px solid var(--line);
   padding-right: 12px;
@@ -602,25 +655,6 @@ section {
   border-color: color-mix(in srgb, var(--emerald) 32%, var(--line));
 }
 
-.tile__bg {
-  position: absolute;
-  right: -8px;
-  bottom: -42px;
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 11rem;
-  line-height: 1;
-  color: var(--emerald);
-  opacity: 0.05;
-  pointer-events: none;
-  transition: opacity 0.5s var(--ease), transform 0.6s var(--ease);
-}
-
-.tile:hover .tile__bg {
-  opacity: 0.09;
-  transform: translateY(-8px) rotate(-3deg);
-}
-
 .tile__body {
   position: relative;
 }
@@ -660,22 +694,7 @@ section {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   margin-top: 22px;
-}
-
-.tile__icon {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 1.3rem;
-  color: var(--emerald);
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--paper);
 }
 
 .tile__cta {
@@ -684,15 +703,12 @@ section {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-3);
-  opacity: 0;
-  transform: translateX(-6px);
-  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease), color 0.4s var(--ease);
+  transition: color 0.4s var(--ease), transform 0.4s var(--ease);
 }
 
 .tile:hover .tile__cta {
-  opacity: 1;
-  transform: translateX(0);
   color: var(--emerald-deep);
+  transform: translateX(4px);
 }
 
 /* ---------- quickstart ---------- */
@@ -912,7 +928,7 @@ section {
 }
 
 .closing h2 em {
-  font-style: italic;
+  font-style: normal;
   color: var(--emerald);
 }
 

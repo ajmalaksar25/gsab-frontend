@@ -1,4 +1,5 @@
 import { GITHUB, PYPI } from "../lib/links";
+import ThemeToggle from "./ThemeToggle";
 
 export default function SiteHeader() {
   return (
@@ -23,6 +24,7 @@ export default function SiteHeader() {
           <a className="nav-cta" href={PYPI} target="_blank" rel="noreferrer">
             PyPI ↗
           </a>
+          <ThemeToggle />
         </nav>
       </div>
     </header>
