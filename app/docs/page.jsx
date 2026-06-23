@@ -47,7 +47,7 @@ export default function Docs() {
 
           <article className="docs__body">
             <header className="docs__hero">
-              <span className="eyebrow">Docs · v0.2.0</span>
+              <span className="eyebrow">Docs · v0.3.1</span>
               <h1 className="display">Using GSAB</h1>
               <p>
                 GSAB is a Python library and CLI that treats a Google Spreadsheet like a
