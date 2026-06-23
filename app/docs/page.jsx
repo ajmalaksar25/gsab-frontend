@@ -13,6 +13,7 @@ const TOC = [
   { id: "schema", label: "Schemas" },
   { id: "connect", label: "Connecting" },
   { id: "crud", label: "CRUD" },
+  { id: "query", label: "Querying" },
   { id: "encryption", label: "Encryption" },
   { id: "cli", label: "CLI reference" },
   { id: "server", label: "Servers & CI" },
@@ -158,6 +159,25 @@ await db.delete_sheet()                            # remove the whole spreadshee
                 <code>read()</code> returns a list of dicts. <code>update()</code> and{" "}
                 <code>delete()</code> return how many rows matched.
               </p>
+            </section>
+
+            <section id="query" className="doc-sec">
+              <h2>Querying</h2>
+              <p>
+                <code>read()</code> filters support operators:{" "}
+                <code>$eq $ne $gt $gte $lt $lte $in $nin $contains $regex</code>.
+              </p>
+              <Code>{`await db.read({"age": {"$gte": 18}})
+await db.read({"plan": {"$in": ["pro", "team"]}})
+await db.read({"email": {"$contains": "@"}})`}</Code>
+              <p>
+                For server-side power — filtering, sorting and aggregation that run on Google's
+                side, not in Python — use <code>query()</code> with the Google Visualization query
+                language. Columns are letters; <code>column()</code> maps a field name to one.
+              </p>
+              <Code>{`rows = await db.query("SELECT A, D WHERE D = 'pro' ORDER BY A DESC LIMIT 10")
+
+db.column("plan")   # -> "D"`}</Code>
             </section>
 
             <section id="encryption" className="doc-sec">
