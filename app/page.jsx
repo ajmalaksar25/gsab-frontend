@@ -304,6 +304,43 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ---------------- roadmap ---------------- */}
+        <section className="band" id="roadmap">
+          <div className="wrap">
+            <Reveal className="section-head">
+              <span className="eyebrow">Roadmap</span>
+              <h2>Built in the open.</h2>
+              <p>What ships in 0.2.0 today, and what&apos;s coming next.</p>
+            </Reveal>
+            <div className="modes">
+              <Reveal className="mode mode--easy">
+                <span className="mode__tag">Shipped · v0.2.0</span>
+                <h3>Available now</h3>
+                <ul className="rm-done">
+                  <li>Friction-free auth (drive.file) + CLI</li>
+                  <li>Schemas, validation &amp; field encryption</li>
+                  <li>Async CRUD with rich filters</li>
+                  <li>Server-side query() — Google Visualization</li>
+                  <li>pandas to_dataframe / from_dataframe + bulk_insert</li>
+                  <li>OS-keychain token storage</li>
+                </ul>
+              </Reveal>
+              <Reveal className="mode" delay={100}>
+                <span className="mode__tag">On the way</span>
+                <h3>Coming next</h3>
+                <ul>
+                  <li>LLM-friendly errors + retry/backoff</li>
+                  <li>Native in-sheet charts + Plotly/Dash helpers</li>
+                  <li>MCP server — use your sheets from Claude</li>
+                  <li>Terminal UI (TUI)</li>
+                  <li>Real-time / reactive mode</li>
+                  <li>One-click hosted sign-in</li>
+                </ul>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
         {/* ---------------- closing ---------------- */}
         <section className="closing">
           <div className="wrap">

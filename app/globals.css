@@ -911,6 +911,10 @@ section {
   color: var(--emerald);
 }
 
+.mode ul.rm-done li::before {
+  content: "✓";
+}
+
 /* ---------- closing ---------- */
 .closing {
   text-align: center;
