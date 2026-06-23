@@ -17,6 +17,8 @@ export default function SiteFooter() {
             GitHub
           </a>
           <a href="/#start">Quickstart</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
         </nav>
         <div className="foot__by">
           Built by{" "}
