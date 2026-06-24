@@ -18,7 +18,24 @@ gsab auth logout
 
 gsab skill list
 gsab skill install [--project] [--portable] [--path DIR]
+
+gsab doctor [--live]
+gsab init [PATH] [--fastapi]
+gsab import <CSV> [--title TITLE]
+gsab cookbook list
+gsab cookbook show <name> [--out FILE]
 ```
+
+## Get productive fast
+
+```bash
+gsab init my-app --fastapi   # scaffold schema.py, app.py, README + a FastAPI api.py
+gsab doctor --live           # check setup + a real create/write/read/query/delete round-trip
+gsab import data.csv         # infer a schema and load a CSV into a new sheet (pandas extra)
+gsab cookbook show charts    # print a ready recipe (or write it with --out)
+```
+
+`gsab init` won't overwrite existing files. `gsab doctor --live` cleans up the throwaway sheet it makes.
 
 - `gsab auth login` — browser sign-in; `--full` requests the broader scope, `-c/--client-secrets` uses your own OAuth client, `--no-browser` prints the URL instead of opening one.
 - `gsab auth status` — shows which credential sources are available (`--json` for machine output).
