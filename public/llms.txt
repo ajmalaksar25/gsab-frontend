@@ -14,6 +14,7 @@ Install: `pip install gsab` (add `pip install "gsab[pandas]"` for DataFrames). P
 - [Connecting](https://gsab.ajmalaksar.com/docs/connecting.md): SheetConnection resolves credentials and builds the API client.
 - [CRUD](https://gsab.ajmalaksar.com/docs/crud.md): Async create, read, update, delete — plus bulk insert and upsert.
 - [Querying](https://gsab.ajmalaksar.com/docs/querying.md): Rich read() filters, plus server-side query() in the Google Visualization query language.
+- [Realtime](https://gsab.ajmalaksar.com/docs/realtime.md): Reactive watch() — your sheet, live. Experimental polling, not push.
 - [Charts](https://gsab.ajmalaksar.com/docs/charts.md): Embed native Google charts in the sheet, or plot with matplotlib/Plotly via to_dataframe().
 - [Field encryption](https://gsab.ajmalaksar.com/docs/encryption.md): Seal sensitive fields with Fernet before they reach the sheet.
 - [Errors & exceptions](https://gsab.ajmalaksar.com/docs/errors.md): One exception hierarchy with clear, actionable messages for people and LLM agents.

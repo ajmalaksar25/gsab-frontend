@@ -139,7 +139,7 @@ export default function Home() {
                 </a>
               </div>
               <div className="hero__meta">
-                <span>v0.6.0</span>
+                <span>v0.7.0</span>
                 <span>MIT licensed</span>
                 <span>Python 3.9+</span>
               </div>
@@ -333,11 +333,11 @@ export default function Home() {
             <Reveal className="section-head">
               <span className="eyebrow">Roadmap</span>
               <h2>Built in the open.</h2>
-              <p>What ships in 0.6.0 today, and what&apos;s coming next.</p>
+              <p>What ships in 0.7.0 today, and what&apos;s coming next.</p>
             </Reveal>
             <div className="modes">
               <Reveal className="mode mode--easy">
-                <span className="mode__tag">Shipped · v0.6.0</span>
+                <span className="mode__tag">Shipped · v0.7.0</span>
                 <h3>Available now</h3>
                 <ul className="rm-done">
                   <li>Friction-free auth (drive.file) + CLI</li>
@@ -345,21 +345,21 @@ export default function Home() {
                   <li>Async CRUD with rich filters</li>
                   <li>upsert() + enforced primary keys</li>
                   <li>Type-correct server-side query() — Google Visualization</li>
-                  <li>pandas to_dataframe / from_dataframe + bulk_insert</li>
-                  <li>Native in-sheet charts via chart()</li>
-                  <li>LLM-friendly errors + retry/backoff</li>
-                  <li>OS-keychain token storage</li>
+                  <li>Reactive watch() — live reads (Experimental)</li>
+                  <li>One-call public sharing</li>
+                  <li>pandas bridge + native in-sheet charts</li>
+                  <li>LLM-friendly errors · installable agent skills</li>
                 </ul>
               </Reveal>
               <Reveal className="mode" delay={100}>
                 <span className="mode__tag">On the way</span>
                 <h3>Coming next</h3>
                 <ul>
-                  <li>Real-time / reactive mode (polling)</li>
+                  <li>Auto update-available notice</li>
                   <li>Rate-aware batching</li>
                   <li>MCP server — use your sheets from Claude</li>
-                  <li>Terminal UI (TUI)</li>
-                  <li>One-click hosted sign-in</li>
+                  <li>A JavaScript client</li>
+                  <li>Improved CLI · terminal UI</li>
                 </ul>
               </Reveal>
             </div>
