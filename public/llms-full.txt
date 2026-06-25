@@ -6,7 +6,7 @@ Generated from the GSAB docs. Source: https://gsab.ajmalaksar.com/docs · PyPI: 
 
 # Using GSAB
 
-GSAB is a Python library and CLI that treats a Google Spreadsheet like a database: a tab is a table, a `Schema` gives it types and validation, and async methods give you CRUD. It also offers server-side queries (the Google Visualization query language), field encryption, a pandas bridge, and native in-sheet charts.
+GSAB is a Python library and CLI that treats a Google Spreadsheet like a database: a tab is a table, a `Schema` gives it types and validation, and async methods give you CRUD — including `upsert()` with enforced primary keys. It also offers server-side queries (the Google Visualization query language), field encryption, a pandas bridge, and native in-sheet charts.
 
 Sign in once with `gsab auth login` — no Google Cloud project required.
 
@@ -17,7 +17,7 @@ import asyncio
 from gsab import SheetConnection, SheetManager, Schema, Field, FieldType
 
 schema = Schema("users", [
-    Field("id",   FieldType.INTEGER, required=True, unique=True),
+    Field("id",   FieldType.INTEGER, primary_key=True),
     Field("name", FieldType.STRING,  required=True, max_length=80),
     Field("plan", FieldType.STRING,  default="free"),
     Field("price", FieldType.FLOAT),
@@ -27,8 +27,9 @@ async def main():
     db = SheetManager(SheetConnection(), schema)
     await db.create_sheet("My App DB")                 # creates the spreadsheet
     await db.insert({"id": 1, "name": "Ada", "plan": "pro", "price": 9.5})
-    rows = await db.read({"plan": "pro"})              # Python-side filter
-    hits = await db.query("SELECT A, D WHERE E > 5")   # server-side query
+    await db.upsert({"id": 1, "plan": "free"})         # idempotent insert-or-update
+    rows = await db.read({"plan": "free"})             # Python-side filter
+    hits = await db.query("SELECT A, D WHERE D > 5")   # server-side query (D = price)
     print(rows, hits)
 
 asyncio.run(main())
@@ -100,17 +101,38 @@ A schema names the tab and declares its fields.
 from gsab import Schema, Field, FieldType
 
 schema = Schema("users", [
-    Field("id",     FieldType.INTEGER, required=True, unique=True),
+    Field("id",     FieldType.INTEGER, primary_key=True),
     Field("name",   FieldType.STRING,  required=True, max_length=80),
     Field("email",  FieldType.STRING,  pattern=r"[^@]+@[^@]+\.[^@]+"),
     Field("age",    FieldType.INTEGER, min_value=0, max_value=150),
+    Field("plan",   FieldType.STRING,  default="free"),
     Field("secret", FieldType.STRING,  encrypted=True),
 ])
 ```
 
-**FieldType:** `STRING`, `INTEGER`, `FLOAT`, `BOOLEAN`, `DATE`, `DATETIME`, `JSON`, `ENCRYPTED`. Values are converted and validated on write and coerced back on read (numbers as numbers, dates as `date`/`datetime`, etc.).
+**FieldType:** `STRING`, `INTEGER`, `FLOAT`, `BOOLEAN`, `DATE`, `DATETIME`, `JSON`. Values are converted and validated on write and coerced back on read (numbers as numbers, dates as `date`/`datetime`, etc.).
 
-**Field options:** `required`, `unique`, `default`, `min_length` / `max_length`, `pattern`, `min_value` / `max_value`, `encrypted`, and custom `validation_rules` (each a `ValidationRule(condition, error_message)`). Validation runs on every write.
+A **`JSON`** field stores a `dict` or `list` and round-trips it as a structured object — it's serialized to JSON on write and parsed back on read:
+
+```python
+schema = Schema("events", [
+    Field("id", FieldType.INTEGER, primary_key=True),
+    Field("meta", FieldType.JSON),
+])
+await db.insert({"id": 1, "meta": {"tags": ["a", "b"], "count": 3}})
+(await db.read({"id": 1}))[0]["meta"]   # -> {"tags": ["a", "b"], "count": 3}  (a dict)
+```
+
+**Field options:** `required`, `unique`, `primary_key`, `default`, `min_length` / `max_length`, `pattern`, `min_value` / `max_value`, `encrypted`, and custom `validation_rules` (each a `ValidationRule(condition, error_message)`). Validation runs on every write.
+
+## Keys & uniqueness
+
+- **`primary_key=True`** marks a field as the table's key. It implies `required` + `unique`, and is the default key [`upsert()`](/docs/crud) matches on. A schema may have at most one.
+- **`unique=True`** is enforced: inserting a value that already exists (or repeats within a `bulk_insert`) raises `DuplicateKeyError`. The check is a read-check-write — see the concurrency note in [CRUD](/docs/crud).
+
+## Required vs. optional
+
+A field is required by default. **Giving a field a `default` makes it optional** — if you omit it on insert, the default is written. So `Field("plan", FieldType.STRING, default="free")` never needs to be supplied.
 
 ---
 
@@ -158,6 +180,45 @@ await db.delete_sheet()                             # remove the whole spreadshe
 ```
 
 `read()` returns a list of dicts keyed by field name, with values in their schema types (no internal bookkeeping fields leak out). `update()` and `delete()` return how many rows matched; `delete()` uses each row's true sheet index, so duplicate rows are handled correctly.
+
+## Upsert — idempotent insert-or-update
+
+If your schema has a [primary key](/docs/schemas), `upsert()` inserts a row, or updates the existing one with the same key. Fields you omit keep their current value. It's the idempotent write you want for syncing or "create if missing" flows.
+
+```python
+schema = Schema("users", [
+    Field("id", FieldType.INTEGER, primary_key=True),   # the key upsert matches on
+    Field("name", FieldType.STRING),
+    Field("plan", FieldType.STRING, default="free"),
+])
+db = SheetManager(conn, schema)
+
+await db.insert({"id": 1, "name": "Ada", "plan": "pro"})
+await db.upsert({"id": 1, "plan": "free"})    # -> "updated"  (name "Ada" is kept)
+await db.upsert({"id": 2, "name": "Lin"})     # -> "inserted"
+
+# Batch — one append + one batched update; last entry wins per key:
+await db.bulk_upsert([{"id": 1, "plan": "pro"}, {"id": 3, "name": "Eve"}])
+# -> {"inserted": 1, "updated": 1}
+```
+
+`upsert()` returns `"inserted"` or `"updated"`; `bulk_upsert()` returns `{"inserted": n, "updated": m}`. Both default to the schema's primary key — pass `key="field"` to match on another column instead.
+
+A `primary_key` / `unique` field is **enforced**: a plain `insert()` of a key that already exists raises `DuplicateKeyError`. Use `upsert()` when you want insert-or-update instead.
+
+> **Heads-up — no conditional write.** Enforcement and upsert are a *read-check-write*: GSAB reads the tab, then writes. Google Sheets has no atomic conditional write, so two clients upserting the *same new key* at the same moment can both insert. Concurrent updates are last-write-wins. For single-client or low-contention use this is exactly what you want; for strict cross-client uniqueness, serialize the writes.
+
+## Publish a sheet (public link)
+
+Turn a sheet you created into a read-only public link with one call — handy for sharing data, embedding, or pointing a dashboard at it. This stays on the default `drive.file` scope because GSAB owns the sheets it creates.
+
+```python
+url = await db.share()        # anyone with the link can view; returns the URL
+db.csv_url                    # CSV-export URL — pandas.read_csv(db.csv_url) once shared
+await db.unshare()            # revoke public access
+```
+
+`share(role="writer")` lets anyone with the link edit (use with care). It only works for sheets **GSAB created**, not a user's pre-existing sheets. Revocation is immediate at the permission level, though Google's public export cache can lag for a short while.
 
 For filter operators and server-side queries, see [Querying](/docs/querying).
 
@@ -211,8 +272,12 @@ chart_id = await db.chart(x="month", y=["revenue", "cost"], kind="LINE")
 import plotly.express as px
 
 df = await db.to_dataframe()
-px.bar(df, x="brand", y="price_eur").show()
+fig = px.bar(df, x="brand", y="price_eur")
+fig.show()                        # interactive window
+fig.write_html("chart.html")      # standalone HTML you can embed anywhere
 ```
+
+See [live examples on the homepage](/#showcase) — interactive Plotly charts whose data round-trips through a real Google Sheet. For a full dashboard UI over a sheet, `gsab cookbook show dashboard` (Streamlit).
 
 ---
 
@@ -257,6 +322,7 @@ except GSABError as e:
 | `PermissionDeniedError` | The account may not access the spreadsheet, or the scope wasn't granted. |
 | `QuotaExceededError` | Rate limit / quota hit. GSAB retries 429/5xx with backoff; try again later. |
 | `ValidationError` | A record, filter, argument or query was rejected (also a `ValueError`). |
+| `DuplicateKeyError` | A write would duplicate a `unique` / `primary_key` value. Use [`upsert()`](/docs/crud) to insert-or-update instead. |
 | `APIError` | An unexpected Google Sheets API error. |
 
 GSAB automatically retries transient failures (429, 5xx, dropped connections, timeouts) with exponential backoff before raising.

@@ -68,7 +68,7 @@ const jsonLd = {
         "A database-like interface for Google Sheets: schemas, validation, field encryption, async CRUD and a friction-free CLI.",
       url: "https://gsab.ajmalaksar.com",
       downloadUrl: "https://pypi.org/project/gsab/",
-      softwareVersion: "0.2.0",
+      softwareVersion: "0.6.0",
       license: "https://opensource.org/licenses/MIT",
       offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
       author: { "@type": "Person", name: "Ajmal Aksar", url: "https://ajmalaksar.com" },

@@ -10,9 +10,9 @@ Install: `pip install gsab` (add `pip install "gsab[pandas]"` for DataFrames). P
 - [Introduction](https://gsab.ajmalaksar.com/docs/introduction.md): What GSAB is and how it treats a Google Sheet like a database.
 - [Install](https://gsab.ajmalaksar.com/docs/install.md): Install GSAB from PyPI. Python 3.9+.
 - [Authentication](https://gsab.ajmalaksar.com/docs/authentication.md): Sign in once with the minimal drive.file scope — no Cloud project needed. DIY and service-account modes too.
-- [Schemas](https://gsab.ajmalaksar.com/docs/schemas.md): Declare a tab's typed columns, validation rules and uniqueness.
+- [Schemas](https://gsab.ajmalaksar.com/docs/schemas.md): Declare a tab's typed columns, validation rules, keys and uniqueness.
 - [Connecting](https://gsab.ajmalaksar.com/docs/connecting.md): SheetConnection resolves credentials and builds the API client.
-- [CRUD](https://gsab.ajmalaksar.com/docs/crud.md): Async create, read, update, delete — plus bulk insert.
+- [CRUD](https://gsab.ajmalaksar.com/docs/crud.md): Async create, read, update, delete — plus bulk insert and upsert.
 - [Querying](https://gsab.ajmalaksar.com/docs/querying.md): Rich read() filters, plus server-side query() in the Google Visualization query language.
 - [Charts](https://gsab.ajmalaksar.com/docs/charts.md): Embed native Google charts in the sheet, or plot with matplotlib/Plotly via to_dataframe().
 - [Field encryption](https://gsab.ajmalaksar.com/docs/encryption.md): Seal sensitive fields with Fernet before they reach the sheet.

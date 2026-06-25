@@ -1,4 +1,4 @@
-import { GITHUB, PYPI, SITE } from "../lib/links";
+import { EMAIL, GITHUB, ISSUES, PYPI, SITE } from "../lib/links";
 
 export default function SiteFooter() {
   return (
@@ -18,6 +18,10 @@ export default function SiteFooter() {
           </a>
           <a href="/#start">Quickstart</a>
           <a href="/#roadmap">Roadmap</a>
+          <a href={ISSUES} target="_blank" rel="noreferrer">
+            Feedback
+          </a>
+          <a href={`mailto:${EMAIL}`}>Contact</a>
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>
         </nav>

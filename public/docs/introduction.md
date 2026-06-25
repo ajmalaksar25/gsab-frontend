@@ -1,6 +1,6 @@
 # Using GSAB
 
-GSAB is a Python library and CLI that treats a Google Spreadsheet like a database: a tab is a table, a `Schema` gives it types and validation, and async methods give you CRUD. It also offers server-side queries (the Google Visualization query language), field encryption, a pandas bridge, and native in-sheet charts.
+GSAB is a Python library and CLI that treats a Google Spreadsheet like a database: a tab is a table, a `Schema` gives it types and validation, and async methods give you CRUD — including `upsert()` with enforced primary keys. It also offers server-side queries (the Google Visualization query language), field encryption, a pandas bridge, and native in-sheet charts.
 
 Sign in once with `gsab auth login` — no Google Cloud project required.
 
@@ -11,7 +11,7 @@ import asyncio
 from gsab import SheetConnection, SheetManager, Schema, Field, FieldType
 
 schema = Schema("users", [
-    Field("id",   FieldType.INTEGER, required=True, unique=True),
+    Field("id",   FieldType.INTEGER, primary_key=True),
     Field("name", FieldType.STRING,  required=True, max_length=80),
     Field("plan", FieldType.STRING,  default="free"),
     Field("price", FieldType.FLOAT),
@@ -21,8 +21,9 @@ async def main():
     db = SheetManager(SheetConnection(), schema)
     await db.create_sheet("My App DB")                 # creates the spreadsheet
     await db.insert({"id": 1, "name": "Ada", "plan": "pro", "price": 9.5})
-    rows = await db.read({"plan": "pro"})              # Python-side filter
-    hits = await db.query("SELECT A, D WHERE E > 5")   # server-side query
+    await db.upsert({"id": 1, "plan": "free"})         # idempotent insert-or-update
+    rows = await db.read({"plan": "free"})             # Python-side filter
+    hits = await db.query("SELECT A, D WHERE D > 5")   # server-side query (D = price)
     print(rows, hits)
 
 asyncio.run(main())

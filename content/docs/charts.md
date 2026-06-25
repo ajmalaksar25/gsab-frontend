@@ -19,5 +19,9 @@ chart_id = await db.chart(x="month", y=["revenue", "cost"], kind="LINE")
 import plotly.express as px
 
 df = await db.to_dataframe()
-px.bar(df, x="brand", y="price_eur").show()
+fig = px.bar(df, x="brand", y="price_eur")
+fig.show()                        # interactive window
+fig.write_html("chart.html")      # standalone HTML you can embed anywhere
 ```
+
+See [live examples on the homepage](/#showcase) — interactive Plotly charts whose data round-trips through a real Google Sheet. For a full dashboard UI over a sheet, `gsab cookbook show dashboard` (Streamlit).

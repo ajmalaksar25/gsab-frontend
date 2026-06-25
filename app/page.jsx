@@ -44,23 +44,23 @@ const TILES = [
     title: "Sign in once",
     desc: "Browser sign-in with the minimal drive.file scope — no Cloud project, no JSON keys to wrangle.",
     chips: ["gsab auth login", "--full", "service account"],
-    href: "/docs#auth",
+    href: "/docs/authentication",
   },
   {
     w: 1,
     glyph: "▤",
     title: "Typed schemas",
-    desc: "Fields, types, validation rules and uniqueness — enforced on every write.",
+    desc: "Fields, types, validation rules, primary keys and uniqueness — enforced on every write.",
     chips: ["Schema", "Field", "FieldType"],
-    href: "/docs#schema",
+    href: "/docs/schemas",
   },
   {
     w: 1,
     glyph: "⇄",
     title: "Async CRUD",
-    desc: "The four verbs you expect, with filter queries.",
-    chips: ["insert()", "read()", "update()", "delete()"],
-    href: "/docs#crud",
+    desc: "The verbs you expect, plus idempotent upsert on a primary key.",
+    chips: ["insert()", "read()", "update()", "upsert()"],
+    href: "/docs/crud",
   },
   {
     w: 2,
@@ -68,7 +68,7 @@ const TILES = [
     title: "Field encryption",
     desc: "Flag a field as encrypted and GSAB seals it with Fernet before it ever reaches the sheet.",
     chips: ["Field(encrypted=True)"],
-    href: "/docs#encryption",
+    href: "/docs/encryption",
   },
   {
     w: 2,
@@ -76,7 +76,7 @@ const TILES = [
     title: "Terminal-native CLI",
     desc: "Manage auth and data straight from your shell — scriptable by design.",
     chips: ["gsab auth login", "gsab auth status", "gsab version"],
-    href: "/docs#cli",
+    href: "/docs/cli",
   },
   {
     w: 1,
@@ -84,7 +84,7 @@ const TILES = [
     title: "Built to grow",
     desc: "An MCP server, a terminal UI and a real-time mode are on the roadmap.",
     chips: ["MCP", "TUI", "real-time"],
-    href: "/docs#roadmap",
+    href: "/#roadmap",
   },
 ];
 
@@ -139,7 +139,7 @@ export default function Home() {
                 </a>
               </div>
               <div className="hero__meta">
-                <span>v0.5.0</span>
+                <span>v0.6.0</span>
                 <span>MIT licensed</span>
                 <span>Python 3.9+</span>
               </div>
@@ -262,6 +262,29 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ---------------- showcase (live charts) ---------------- */}
+        <section className="band" id="showcase">
+          <div className="wrap">
+            <Reveal className="section-head">
+              <span className="eyebrow">Proof of concept</span>
+              <h2>Your data, charted live.</h2>
+              <p>
+                Real, interactive charts — the data was written to a Google Sheet with GSAB,
+                read back with <code>to_dataframe()</code>, and plotted with Plotly. No database,
+                just a sheet.
+              </p>
+            </Reveal>
+            <div className="showcase__grid">
+              <Reveal className="showcase__card">
+                <iframe src="/examples/revenue.html" title="Monthly revenue, charted from a Google Sheet" loading="lazy" />
+              </Reveal>
+              <Reveal className="showcase__card" delay={100}>
+                <iframe src="/examples/signups.html" title="Signups by month, charted from a Google Sheet" loading="lazy" />
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
         {/* ---------------- auth modes ---------------- */}
         <section className="band" id="auth">
           <div className="wrap">
@@ -310,16 +333,17 @@ export default function Home() {
             <Reveal className="section-head">
               <span className="eyebrow">Roadmap</span>
               <h2>Built in the open.</h2>
-              <p>What ships in 0.5.0 today, and what&apos;s coming next.</p>
+              <p>What ships in 0.6.0 today, and what&apos;s coming next.</p>
             </Reveal>
             <div className="modes">
               <Reveal className="mode mode--easy">
-                <span className="mode__tag">Shipped · v0.5.0</span>
+                <span className="mode__tag">Shipped · v0.6.0</span>
                 <h3>Available now</h3>
                 <ul className="rm-done">
                   <li>Friction-free auth (drive.file) + CLI</li>
                   <li>Schemas, validation &amp; field encryption</li>
                   <li>Async CRUD with rich filters</li>
+                  <li>upsert() + enforced primary keys</li>
                   <li>Type-correct server-side query() — Google Visualization</li>
                   <li>pandas to_dataframe / from_dataframe + bulk_insert</li>
                   <li>Native in-sheet charts via chart()</li>
@@ -331,10 +355,10 @@ export default function Home() {
                 <span className="mode__tag">On the way</span>
                 <h3>Coming next</h3>
                 <ul>
+                  <li>Real-time / reactive mode (polling)</li>
+                  <li>Rate-aware batching</li>
                   <li>MCP server — use your sheets from Claude</li>
                   <li>Terminal UI (TUI)</li>
-                  <li>Real-time / reactive mode</li>
-                  <li>Server-side date filters</li>
                   <li>One-click hosted sign-in</li>
                 </ul>
               </Reveal>

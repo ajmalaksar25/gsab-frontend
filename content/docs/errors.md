@@ -29,6 +29,7 @@ except GSABError as e:
 | `PermissionDeniedError` | The account may not access the spreadsheet, or the scope wasn't granted. |
 | `QuotaExceededError` | Rate limit / quota hit. GSAB retries 429/5xx with backoff; try again later. |
 | `ValidationError` | A record, filter, argument or query was rejected (also a `ValueError`). |
+| `DuplicateKeyError` | A write would duplicate a `unique` / `primary_key` value. Use [`upsert()`](/docs/crud) to insert-or-update instead. |
 | `APIError` | An unexpected Google Sheets API error. |
 
 GSAB automatically retries transient failures (429, 5xx, dropped connections, timeouts) with exponential backoff before raising.
