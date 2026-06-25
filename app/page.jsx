@@ -139,7 +139,7 @@ export default function Home() {
                 </a>
               </div>
               <div className="hero__meta">
-                <span>v0.7.1</span>
+                <span>v0.7.2</span>
                 <span>MIT licensed</span>
                 <span>Python 3.9+</span>
               </div>
@@ -333,11 +333,11 @@ export default function Home() {
             <Reveal className="section-head">
               <span className="eyebrow">Roadmap</span>
               <h2>Built in the open.</h2>
-              <p>What ships in 0.7.1 today, and what&apos;s coming next.</p>
+              <p>What ships in 0.7.2 today, and what&apos;s coming next.</p>
             </Reveal>
             <div className="modes">
               <Reveal className="mode mode--easy">
-                <span className="mode__tag">Shipped · v0.7.1</span>
+                <span className="mode__tag">Shipped · v0.7.2</span>
                 <h3>Available now</h3>
                 <ul className="rm-done">
                   <li>Friction-free auth (drive.file) + CLI</li>
