@@ -36,3 +36,11 @@ creds = resolve_credentials()        # cached token / ADC / service account
 ```
 
 Tokens are stored in your OS keychain (keyring), with a 0600-file fallback.
+
+**macOS: stop the Keychain password prompt.** If every `gsab` command re-asks for your Keychain password, that's macOS prompting because the CLI binary isn't in the keychain item's ACL. Either click **"Always Allow"** when prompted, or skip the keychain entirely and use the token file:
+
+```bash
+export GSAB_NO_KEYRING=1   # store the token in a 0600 file instead of the Keychain
+```
+
+**Staying up to date.** The CLI prints a one-line notice (to stderr) when a newer `gsab` is on PyPI — checked at most once a day, cached, and never blocking. Silence it with `GSAB_NO_UPDATE_CHECK=1`.
