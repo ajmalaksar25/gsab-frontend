@@ -209,7 +209,7 @@ export default function Home() {
                   </div>
                   <div className="tile__foot">
                     <span className="tile__cta">
-                      Open docs <span aria-hidden="true">→</span>
+                      Learn more <span aria-hidden="true">→</span>
                     </span>
                   </div>
                 </a>
