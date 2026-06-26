@@ -19,6 +19,7 @@ Install: `pip install gsab` (add `pip install "gsab[pandas]"` for DataFrames). P
 - [Field encryption](https://gsab.ajmalaksar.com/docs/encryption.md): Seal sensitive fields with Fernet before they reach the sheet.
 - [Errors & exceptions](https://gsab.ajmalaksar.com/docs/errors.md): One exception hierarchy with clear, actionable messages for people and LLM agents.
 - [CLI reference](https://gsab.ajmalaksar.com/docs/cli.md): The gsab command — auth and version, from your shell.
+- [MCP server](https://gsab.ajmalaksar.com/docs/mcp.md): Use your Google Sheet as a database from Claude (or any MCP host) — gsab mcp.
 - [Servers & CI](https://gsab.ajmalaksar.com/docs/servers.md): Use a service account for headless environments.
 
 ## More

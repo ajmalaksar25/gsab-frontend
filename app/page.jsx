@@ -81,10 +81,10 @@ const TILES = [
   {
     w: 1,
     glyph: "✦",
-    title: "Built to grow",
-    desc: "An MCP server, a terminal UI and a real-time mode are on the roadmap.",
-    chips: ["MCP", "TUI", "real-time"],
-    href: "/#roadmap",
+    title: "Agent-native",
+    desc: "Installable skills and an MCP server let Claude use your sheet as a database.",
+    chips: ["MCP", "skills", "watch()"],
+    href: "/docs/mcp",
   },
 ];
 
@@ -139,7 +139,7 @@ export default function Home() {
                 </a>
               </div>
               <div className="hero__meta">
-                <span>v0.7.2</span>
+                <span>v0.8.0</span>
                 <span>MIT licensed</span>
                 <span>Python 3.9+</span>
               </div>
@@ -333,11 +333,11 @@ export default function Home() {
             <Reveal className="section-head">
               <span className="eyebrow">Roadmap</span>
               <h2>Built in the open.</h2>
-              <p>What ships in 0.7.2 today, and what&apos;s coming next.</p>
+              <p>What ships in 0.8.0 today, and what&apos;s coming next.</p>
             </Reveal>
             <div className="modes">
               <Reveal className="mode mode--easy">
-                <span className="mode__tag">Shipped · v0.7.2</span>
+                <span className="mode__tag">Shipped · v0.8.0</span>
                 <h3>Available now</h3>
                 <ul className="rm-done">
                   <li>Friction-free auth (drive.file) + CLI</li>
@@ -347,6 +347,7 @@ export default function Home() {
                   <li>Type-correct server-side query() — Google Visualization</li>
                   <li>Reactive watch() — live reads (Experimental)</li>
                   <li>One-call public sharing</li>
+                  <li>MCP server — use your sheets from Claude</li>
                   <li>pandas bridge + native in-sheet charts</li>
                   <li>LLM-friendly errors · installable agent skills</li>
                 </ul>
@@ -355,11 +356,11 @@ export default function Home() {
                 <span className="mode__tag">On the way</span>
                 <h3>Coming next</h3>
                 <ul>
-                  <li>Auto update-available notice</li>
-                  <li>Rate-aware batching</li>
-                  <li>MCP server — use your sheets from Claude</li>
                   <li>A JavaScript client</li>
-                  <li>Improved CLI · terminal UI</li>
+                  <li>Rate-aware batching</li>
+                  <li>Improved / pipe-friendly CLI</li>
+                  <li>Terminal UI (TUI)</li>
+                  <li>One-click hosted sign-in</li>
                 </ul>
               </Reveal>
             </div>
