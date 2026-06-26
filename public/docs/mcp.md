@@ -1,6 +1,6 @@
 # MCP server
 
-`gsab mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server so an MCP host — Claude Desktop, Claude Code, or any MCP client — can use a Google Sheet as a database directly, with your existing GSAB sign-in.
+`gsab mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server so **any MCP client** can use a Google Sheet as a database directly, with your existing GSAB sign-in. MCP is an open standard — GSAB works the same with Claude (Desktop/Code), Codex, Cursor, Zed, Cline, OpenCode, Continue, and anything else that speaks MCP.
 
 ```bash
 pip install "gsab[mcp]"
@@ -8,9 +8,9 @@ gsab auth login          # one-time (or set GSAB_SERVICE_ACCOUNT for headless)
 gsab mcp                 # runs the server over stdio
 ```
 
-## Configure your host
+## Configure your client
 
-Point your MCP host at the `gsab` command with the `mcp` argument. For Claude Desktop (`claude_desktop_config.json`):
+Every MCP client needs the same thing — a stdio server launched with **command `gsab`, args `["mcp"]`**. The config format differs per client; most use a JSON block like this:
 
 ```json
 {
@@ -19,6 +19,12 @@ Point your MCP host at the `gsab` command with the `mcp` argument. For Claude De
   }
 }
 ```
+
+- **Claude Desktop** → `claude_desktop_config.json` (the block above).
+- **Claude Code** → `claude mcp add gsab -- gsab mcp`.
+- **Codex / Cursor / Zed / Cline / Continue / OpenCode** → add a stdio MCP server with the same `command` + `args` in that client's MCP settings.
+
+If `gsab` isn't on the client's PATH, use the absolute path to the `gsab` executable (e.g. from your venv) as `command`.
 
 ## Tools
 

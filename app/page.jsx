@@ -82,7 +82,7 @@ const TILES = [
     w: 1,
     glyph: "✦",
     title: "Agent-native",
-    desc: "Installable skills and an MCP server let Claude use your sheet as a database.",
+    desc: "Installable skills + an MCP server let any agent — Claude, Codex, Cursor — use your sheet.",
     chips: ["MCP", "skills", "watch()"],
     href: "/docs/mcp",
   },
@@ -116,7 +116,6 @@ export default function Home() {
         <section className="hero">
           <div className="wrap hero__grid">
             <div className="hero__copy">
-              <span className="eyebrow">Python · CLI · Open source</span>
               <h1 className="display">
                 Google Sheets,
                 <br />
@@ -139,7 +138,10 @@ export default function Home() {
                 </a>
               </div>
               <div className="hero__meta">
-                <span>v0.8.0</span>
+                <a className="hero__ver" href={`${GITHUB}/releases`} target="_blank" rel="noreferrer">
+                  <span className="hero__ver-dot" aria-hidden="true" />
+                  v0.8.0
+                </a>
                 <span>MIT licensed</span>
                 <span>Python 3.9+</span>
               </div>

@@ -160,6 +160,16 @@ conn = SheetConnection(service_account_file="service-account.json")
 
 A `SheetManager` (see [CRUD](/docs/crud)) binds this connection to a [schema](/docs/schemas) and connects lazily on first use, so calling `connect()` yourself is optional.
 
+## Use an existing spreadsheet
+
+Easy mode (`drive.file`) covers sheets GSAB created. To work with a spreadsheet you already have, set its id directly — and use **DIY auth** (`gsab auth login --full`, or your own OAuth client with `-c`) so the broader scope can reach it. See [Authentication](/docs/authentication).
+
+```python
+db = SheetManager(SheetConnection(), schema)
+db.sheet_id = "1AbC...your-spreadsheet-id"   # the tab must match schema.name
+rows = await db.read()
+```
+
 ---
 
 # CRUD
@@ -250,6 +260,25 @@ db.column("plan")   # -> "D"
 ```
 
 `query()` returns dicts keyed by the sheet's header labels. Columns that map to a schema field come back in that field's Python type (and decrypted), matching `read()`; aggregates like `SUM(D)` stay gviz-native.
+
+## How heavy can the filtering get?
+
+`query()` exposes the full **Google Visualization query language** — close to SQL, run on Google's servers:
+
+- **`WHERE`** with `AND` / `OR` / `NOT`, the comparisons `= != < <= > >=`, `IS NULL` / `IS NOT NULL`, and the text matchers `CONTAINS`, `STARTS WITH`, `ENDS WITH`, `MATCHES` (regex), `LIKE`.
+- **`GROUP BY`** with the aggregates `SUM AVG COUNT MAX MIN`, plus **`PIVOT`**.
+- **`ORDER BY ... ASC|DESC`**, **`LIMIT`**, **`OFFSET`**, and `LABEL` / `FORMAT`.
+
+```python
+await db.query(
+    "SELECT D, COUNT(A) WHERE C > 100 AND (B CONTAINS 'pro' OR B STARTS WITH 't') "
+    "GROUP BY D ORDER BY COUNT(A) DESC LIMIT 5"
+)
+```
+
+So for read-heavy analytics — dashboards, leaderboards, reports — push the work into `query()` and let Google do it. Two honest limits: there are **no SQL joins** (Sheets has no relations — join in Python across sheets), and `query()` runs against one tab.
+
+**`read()` vs `query()`:** `read()` fetches the rows and filters in **Python**, so its operators (`$in`, `$regex`, `$contains`, …) are convenient but it pulls the whole tab first — fine for small/medium sheets. `query()` filters/sorts/aggregates **server-side** and returns only what matched — use it when the sheet is large or the filtering is heavy.
 
 > Server-side filtering on `DATE` columns isn't supported yet — filter dates in Python via `read()`.
 
@@ -431,7 +460,7 @@ It ships two skills: **`gsab`** (core usage, API reference, recipes) and **`gsab
 
 # MCP server
 
-`gsab mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server so an MCP host — Claude Desktop, Claude Code, or any MCP client — can use a Google Sheet as a database directly, with your existing GSAB sign-in.
+`gsab mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server so **any MCP client** can use a Google Sheet as a database directly, with your existing GSAB sign-in. MCP is an open standard — GSAB works the same with Claude (Desktop/Code), Codex, Cursor, Zed, Cline, OpenCode, Continue, and anything else that speaks MCP.
 
 ```bash
 pip install "gsab[mcp]"
@@ -439,9 +468,9 @@ gsab auth login          # one-time (or set GSAB_SERVICE_ACCOUNT for headless)
 gsab mcp                 # runs the server over stdio
 ```
 
-## Configure your host
+## Configure your client
 
-Point your MCP host at the `gsab` command with the `mcp` argument. For Claude Desktop (`claude_desktop_config.json`):
+Every MCP client needs the same thing — a stdio server launched with **command `gsab`, args `["mcp"]`**. The config format differs per client; most use a JSON block like this:
 
 ```json
 {
@@ -450,6 +479,12 @@ Point your MCP host at the `gsab` command with the `mcp` argument. For Claude De
   }
 }
 ```
+
+- **Claude Desktop** → `claude_desktop_config.json` (the block above).
+- **Claude Code** → `claude mcp add gsab -- gsab mcp`.
+- **Codex / Cursor / Zed / Cline / Continue / OpenCode** → add a stdio MCP server with the same `command` + `args` in that client's MCP settings.
+
+If `gsab` isn't on the client's PATH, use the absolute path to the `gsab` executable (e.g. from your venv) as `command`.
 
 ## Tools
 
