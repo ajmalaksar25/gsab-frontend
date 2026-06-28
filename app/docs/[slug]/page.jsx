@@ -38,7 +38,7 @@ export default async function DocPage({ params }) {
   return (
     <>
       <div className="docpage__top">
-        <span className="eyebrow">Docs · v0.8.0</span>
+        <span className="eyebrow">Docs · v0.9.0</span>
         <CopyPageButton slug={doc.slug} title={doc.title} markdown={doc.content} />
       </div>
 
