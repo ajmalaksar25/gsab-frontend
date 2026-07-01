@@ -20,7 +20,7 @@ Install: `pip install gsab` (add `pip install "gsab[pandas]"` for DataFrames). P
 - [Errors & exceptions](https://gsab.ajmalaksar.com/docs/errors.md): One exception hierarchy with clear, actionable messages for people and LLM agents.
 - [CLI reference](https://gsab.ajmalaksar.com/docs/cli.md): The gsab command — auth and version, from your shell.
 - [MCP server](https://gsab.ajmalaksar.com/docs/mcp.md): Use your Google Sheet as a database from any MCP client — Claude, Codex, Cursor, Zed and more.
-- [Access control](https://gsab.ajmalaksar.com/docs/access-control.md): AccessPolicy — guardrails for what the library, the MCP server, or an AI agent may do.
+- [Access control](https://gsab.ajmalaksar.com/docs/access-control.md): AccessPolicy — guardrails for what the library, the MCP server, the TUI, or an AI agent may do.
 - [Servers & CI](https://gsab.ajmalaksar.com/docs/servers.md): Use a service account for headless environments.
 
 ## More
