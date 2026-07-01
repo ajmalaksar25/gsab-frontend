@@ -1,6 +1,6 @@
 # Access control
 
-An `AccessPolicy` is a small set of **guardrails** you construct in Python and pass where you use GSAB — to a `SheetManager`, or to the MCP server. Save it as a small JSON profile to share the same config across the library, the MCP server and (soon) the TUI.
+An `AccessPolicy` is a small set of **guardrails** you construct in Python and pass where you use GSAB — to a `SheetManager`, or to the MCP server. Save it as a small JSON profile to share the same config across the library, the MCP server and the TUI.
 
 > **What it is, honestly.** `AccessPolicy` is a *client-side guardrail* for safety, control and visibility — **not** the security boundary. The real boundary stays your OAuth **scope** (`drive.file` = only the sheets GSAB created). A determined caller of the raw library can ignore the policy; Google still enforces the real permissions.
 
@@ -50,3 +50,21 @@ gsab mcp --policy team-policy.json   # allowed sheets, share-role cap, destructi
 ```
 
 With an allowlist, the server refuses to touch a sheet outside it **before any network call**.
+
+## In the TUI *(Experimental)*
+
+`gsab tui` opens a terminal cockpit over the same `AccessPolicy` — the sibling front-end to the MCP server, over the same core. Install the extra and launch it, optionally pointing at a profile:
+
+```bash
+pip install "gsab[tui]"
+gsab tui                       # start from a permissive policy
+gsab tui --policy team-policy.json   # open (and save back to) a profile
+```
+
+You get three panes:
+
+- **Policy editor** — toggle `read_only` / `allow_share` / `confirm_destructive`, pick the default + max share role, and manage the allowed-sheets allowlist.
+- **Probe** — pick an op (read, query, insert, upsert, update, delete, share, create) and a sheet id, and see whether it would be **allowed or blocked** — running the exact guardrail checks the library and MCP server apply.
+- **Live activity feed** — the policy's `on_activity` events stream here as ops run. The policy on screen is a real `AccessPolicy`, so a `SheetManager` sharing it streams into the feed too.
+
+Save from the TUI and the JSON profile is the same one `gsab mcp --policy` reads — one profile, three surfaces. *(Experimental — the API may still change; the TUI ships in the `gsab[tui]` extra.)*
