@@ -62,6 +62,6 @@ db.csv_url                    # CSV-export URL — pandas.read_csv(db.csv_url) o
 await db.unshare()            # revoke public access
 ```
 
-`share(role="writer")` lets anyone with the link edit (use with care). It only works for sheets **GSAB created**, not a user's pre-existing sheets. Revocation is immediate at the permission level, though Google's public export cache can lag for a short while.
+`share(role=...)` takes `reader` (default), `commenter` or `writer` — `writer` lets anyone with the link edit, so use it with care (the Sheets UI term *editor* is an alias). An [`AccessPolicy`](/docs/access-control) can cap how high the role may go. Sharing only works for sheets **GSAB created**, not a user's pre-existing sheets; revocation is immediate at the permission level, though Google's public export cache can lag for a short while.
 
 For filter operators and server-side queries, see [Querying](/docs/querying).
