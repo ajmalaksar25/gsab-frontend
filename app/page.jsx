@@ -140,7 +140,7 @@ export default function Home() {
               <div className="hero__meta">
                 <a className="hero__ver" href={`${GITHUB}/releases`} target="_blank" rel="noreferrer">
                   <span className="hero__ver-dot" aria-hidden="true" />
-                  v0.9.0
+                  v0.10.0
                 </a>
                 <span>MIT licensed</span>
                 <span>Python 3.9+</span>
@@ -335,11 +335,11 @@ export default function Home() {
             <Reveal className="section-head">
               <span className="eyebrow">Roadmap</span>
               <h2>Built in the open.</h2>
-              <p>What ships in 0.9.0 today, and what&apos;s coming next.</p>
+              <p>What ships in 0.10.0 today, and what&apos;s coming next.</p>
             </Reveal>
             <div className="modes">
               <Reveal className="mode mode--easy">
-                <span className="mode__tag">Shipped · v0.9.0</span>
+                <span className="mode__tag">Shipped · v0.10.0</span>
                 <h3>Available now</h3>
                 <ul className="rm-done">
                   <li>Friction-free auth (drive.file) + CLI</li>
@@ -351,6 +351,7 @@ export default function Home() {
                   <li>One-call public sharing (reader/commenter/writer)</li>
                   <li>MCP server — use your sheets from any AI agent</li>
                   <li>Access control (AccessPolicy) + security CI</li>
+                  <li>Access-control TUI (gsab tui) — manage access, watch live activity</li>
                   <li>pandas bridge + native in-sheet charts</li>
                   <li>LLM-friendly errors · installable agent skills</li>
                 </ul>
@@ -362,7 +363,6 @@ export default function Home() {
                   <li>A JavaScript client</li>
                   <li>Rate-aware batching</li>
                   <li>Improved / pipe-friendly CLI</li>
-                  <li>Terminal UI (TUI)</li>
                   <li>One-click hosted sign-in</li>
                 </ul>
               </Reveal>

@@ -197,7 +197,7 @@ await db.rename_sheet("New title")
 await db.delete_sheet()                             # remove the whole spreadsheet
 ```
 
-`read()` returns a list of dicts keyed by field name, with values in their schema types (no internal bookkeeping fields leak out). `update()` and `delete()` return how many rows matched; `delete()` uses each row's true sheet index, so duplicate rows are handled correctly.
+`read()` returns a list of dicts keyed by field name, with values in their schema types (no internal bookkeeping fields leak out). `update()` and `delete()` return how many rows matched; `delete()` uses each row's true sheet index, so duplicate rows are handled correctly. `update()` writes only the cells you changed (not the whole row), so a concurrent edit to a *different* field of the same row isn't clobbered.
 
 ## Upsert — idempotent insert-or-update
 
@@ -224,7 +224,7 @@ await db.bulk_upsert([{"id": 1, "plan": "pro"}, {"id": 3, "name": "Eve"}])
 
 A `primary_key` / `unique` field is **enforced**: a plain `insert()` of a key that already exists raises `DuplicateKeyError`. Use `upsert()` when you want insert-or-update instead.
 
-> **Heads-up — no conditional write.** Enforcement and upsert are a *read-check-write*: GSAB reads the tab, then writes. Google Sheets has no atomic conditional write, so two clients upserting the *same new key* at the same moment can both insert. Concurrent updates are last-write-wins. For single-client or low-contention use this is exactly what you want; for strict cross-client uniqueness, serialize the writes.
+> **Heads-up — no conditional write.** Enforcement and upsert are a *read-check-write*: GSAB reads the tab, then writes. Google Sheets has no atomic conditional write, so two clients upserting the *same new key* at the same moment can both insert. Because `update()`/`upsert()` write only the cells you changed, concurrent edits to **different fields of the same row** are safe — only a true **same-cell** edit is last-write-wins. For single-client or low-contention use this is exactly what you want; for strict cross-client uniqueness, serialize the writes.
 
 ## Publish a sheet (public link)
 
@@ -517,7 +517,7 @@ With `allowed_sheets` set, the server refuses any sheet outside the list **befor
 
 # Access control
 
-An `AccessPolicy` is a small set of **guardrails** you construct in Python and pass where you use GSAB — to a `SheetManager`, or to the MCP server. Save it as a small JSON profile to share the same config across the library, the MCP server and (soon) the TUI.
+An `AccessPolicy` is a small set of **guardrails** you construct in Python and pass where you use GSAB — to a `SheetManager`, or to the MCP server. Save it as a small JSON profile to share the same config across the library, the MCP server and the TUI.
 
 > **What it is, honestly.** `AccessPolicy` is a *client-side guardrail* for safety, control and visibility — **not** the security boundary. The real boundary stays your OAuth **scope** (`drive.file` = only the sheets GSAB created). A determined caller of the raw library can ignore the policy; Google still enforces the real permissions.
 
@@ -567,6 +567,24 @@ gsab mcp --policy team-policy.json   # allowed sheets, share-role cap, destructi
 ```
 
 With an allowlist, the server refuses to touch a sheet outside it **before any network call**.
+
+## In the TUI *(Experimental)*
+
+`gsab tui` opens a terminal cockpit over the same `AccessPolicy` — the sibling front-end to the MCP server, over the same core. Install the extra and launch it, optionally pointing at a profile:
+
+```bash
+pip install "gsab[tui]"
+gsab tui                       # start from a permissive policy
+gsab tui --policy team-policy.json   # open (and save back to) a profile
+```
+
+You get three panes:
+
+- **Policy editor** — toggle `read_only` / `allow_share` / `confirm_destructive`, pick the default + max share role, and manage the allowed-sheets allowlist.
+- **Probe** — pick an op (read, query, insert, upsert, update, delete, share, create) and a sheet id, and see whether it would be **allowed or blocked** — running the exact guardrail checks the library and MCP server apply.
+- **Live activity feed** — the policy's `on_activity` events stream here as ops run. The policy on screen is a real `AccessPolicy`, so a `SheetManager` sharing it streams into the feed too.
+
+Save from the TUI and the JSON profile is the same one `gsab mcp --policy` reads — one profile, three surfaces. *(Experimental — the API may still change; the TUI ships in the `gsab[tui]` extra.)*
 
 ---
 

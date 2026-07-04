@@ -29,7 +29,7 @@ await db.rename_sheet("New title")
 await db.delete_sheet()                             # remove the whole spreadsheet
 ```
 
-`read()` returns a list of dicts keyed by field name, with values in their schema types (no internal bookkeeping fields leak out). `update()` and `delete()` return how many rows matched; `delete()` uses each row's true sheet index, so duplicate rows are handled correctly.
+`read()` returns a list of dicts keyed by field name, with values in their schema types (no internal bookkeeping fields leak out). `update()` and `delete()` return how many rows matched; `delete()` uses each row's true sheet index, so duplicate rows are handled correctly. `update()` writes only the cells you changed (not the whole row), so a concurrent edit to a *different* field of the same row isn't clobbered.
 
 ## Upsert — idempotent insert-or-update
 
@@ -56,7 +56,7 @@ await db.bulk_upsert([{"id": 1, "plan": "pro"}, {"id": 3, "name": "Eve"}])
 
 A `primary_key` / `unique` field is **enforced**: a plain `insert()` of a key that already exists raises `DuplicateKeyError`. Use `upsert()` when you want insert-or-update instead.
 
-> **Heads-up — no conditional write.** Enforcement and upsert are a *read-check-write*: GSAB reads the tab, then writes. Google Sheets has no atomic conditional write, so two clients upserting the *same new key* at the same moment can both insert. Concurrent updates are last-write-wins. For single-client or low-contention use this is exactly what you want; for strict cross-client uniqueness, serialize the writes.
+> **Heads-up — no conditional write.** Enforcement and upsert are a *read-check-write*: GSAB reads the tab, then writes. Google Sheets has no atomic conditional write, so two clients upserting the *same new key* at the same moment can both insert. Because `update()`/`upsert()` write only the cells you changed, concurrent edits to **different fields of the same row** are safe — only a true **same-cell** edit is last-write-wins. For single-client or low-contention use this is exactly what you want; for strict cross-client uniqueness, serialize the writes.
 
 ## Publish a sheet (public link)
 
