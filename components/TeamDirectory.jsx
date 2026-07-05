@@ -4,8 +4,8 @@
 // Reads happen RIGHT HERE in the browser via gsab-js (`useSheet` polls + diffs the sheet);
 // writes go through /api/demo, which uses gsab-js in Node with the demo's own credentials.
 import { useState } from "react";
-import { connect } from "gsab";
-import { useSheet } from "gsab/react";
+import { connect } from "gsab-js";
+import { useSheet } from "gsab-js/react";
 
 import { DEMO_SHEET_ID, DEMO_SHEET_URL, ROLES, STATUSES } from "../lib/demo-shared";
 

@@ -133,7 +133,11 @@ export default function Home() {
                     →
                   </span>
                 </a>
-                <a className="btn btn--ghost" href="/docs">
+                <a className="btn btn--ghost" href="/demo">
+                  <span className="demo-live__dot" aria-hidden="true" />
+                  See it live
+                </a>
+                <a className="btn btn--ghost hide-sm" href="/docs">
                   Read the docs
                 </a>
               </div>

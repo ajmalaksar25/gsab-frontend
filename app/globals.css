@@ -1776,3 +1776,5 @@ section {
   .demo-add { grid-template-columns: 1fr; }
   .demo-count { margin-left: 0; }
 }
+
+.btn .demo-live__dot { margin-right: 4px; flex: none; }

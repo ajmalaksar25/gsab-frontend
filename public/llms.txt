@@ -22,6 +22,7 @@ Install: `pip install gsab` (add `pip install "gsab[pandas]"` for DataFrames). P
 - [MCP server](https://gsab.ajmalaksar.com/docs/mcp.md): Use your Google Sheet as a database from any MCP client — Claude, Codex, Cursor, Zed and more.
 - [Access control](https://gsab.ajmalaksar.com/docs/access-control.md): AccessPolicy — guardrails for what the library, the MCP server, the TUI, or an AI agent may do.
 - [Servers & CI](https://gsab.ajmalaksar.com/docs/servers.md): Use a service account for headless environments.
+- [JavaScript / TypeScript client](https://gsab.ajmalaksar.com/docs/javascript.md): gsab-js on npm — no-auth browser reads, Node CRUD, a reactive cache, and a React hook.
 
 ## More
 - [Full docs as one file](https://gsab.ajmalaksar.com/llms-full.txt)

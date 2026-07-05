@@ -37,23 +37,27 @@ export default function Demo() {
             <h2>What this page actually runs</h2>
             <pre>
               <code>{`// in your browser (no auth — it's a public sheet)
-import { connect } from "gsab";
-import { useSheet } from "gsab/react";
+import { connect } from "gsab-js";
+import { useSheet } from "gsab-js/react";
 
 const db = connect("<sheet url or id>").sheet();
 const { rows, loading, error } = useSheet(db, { key: "id" });
 
 // on the server (writes need a Google sign-in)
-import { connect } from "gsab";
+import { connect } from "gsab-js";
 const db = connect({ spreadsheetId, auth }).sheet(schema);
 await db.insert({ id: 5, name: "You", email: "you@example.com" });`}</code>
             </pre>
             <p>
-              The JS client is early and not yet on npm —{" "}
+              Try it yourself: <code>npm install gsab-js</code> —{" "}
+              <a href="https://www.npmjs.com/package/gsab-js" target="_blank" rel="noreferrer">
+                npm
+              </a>{" "}
+              ·{" "}
               <a href="https://github.com/ajmalaksar25/gsab-js" target="_blank" rel="noreferrer">
-                github.com/ajmalaksar25/gsab-js
+                GitHub
               </a>
-              . The Python library it mirrors is{" "}
+              . Early (0.1.x) and moving fast. The Python library it mirrors is{" "}
               <a href="https://pypi.org/project/gsab/" target="_blank" rel="noreferrer">
                 on PyPI
               </a>
