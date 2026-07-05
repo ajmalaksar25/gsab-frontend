@@ -57,7 +57,7 @@ await db.insert({ id: 5, name: "You", email: "you@example.com" });`}</code>
               <a href="https://github.com/ajmalaksar25/gsab-js" target="_blank" rel="noreferrer">
                 GitHub
               </a>
-              . Early (0.1.x) and moving fast. The Python library it mirrors is{" "}
+              . Early (0.2.x) and moving fast. The Python library it mirrors is{" "}
               <a href="https://pypi.org/project/gsab/" target="_blank" rel="noreferrer">
                 on PyPI
               </a>

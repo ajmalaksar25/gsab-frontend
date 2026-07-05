@@ -358,13 +358,17 @@ export default function Home() {
                   <li>Access-control TUI (gsab tui) — manage access, watch live activity</li>
                   <li>pandas bridge + native in-sheet charts</li>
                   <li>LLM-friendly errors · installable agent skills</li>
+                  <li>
+                    JavaScript client — <a href="/docs/javascript">gsab-js on npm</a>: browser
+                    reads, React hook, Node CRUD (early)
+                  </li>
                 </ul>
               </Reveal>
               <Reveal className="mode" delay={100}>
                 <span className="mode__tag">On the way</span>
                 <h3>Coming next</h3>
                 <ul>
-                  <li>A JavaScript client</li>
+                  <li>In-browser Google sign-in for the JS client</li>
                   <li>Rate-aware batching</li>
                   <li>Improved / pipe-friendly CLI</li>
                   <li>One-click hosted sign-in</li>
