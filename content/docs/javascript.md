@@ -14,7 +14,7 @@ that runs in the **browser and Node**. TypeScript types included.
 npm install gsab-js
 ```
 
-> Early (`0.1.x`) and moving fast. `watch()`, `createCache()` and `useSheet()` are
+> Early (`0.2.x`) and moving fast. `watch()`, `createCache()` and `useSheet()` are
 > **Experimental** — the API may change. See it running: [the live demo](/demo) is built on
 > exactly what's below.
 
@@ -106,12 +106,12 @@ row don't clobber each other.
 
 ## Deploying (Vercel / serverless / CI)
 
-A server can't open a browser, so it uses a long-lived refresh token. Print your credentials
-**once on your own machine** and set them as env vars:
+A server can't open a browser, so it uses a long-lived refresh token. One command on your own
+machine, **one env var** on the host:
 
 ```bash
-node --input-type=module -e "console.log(await (await import('gsab-js/node')).deployEnv())"
-# → { GSAB_CLIENT_ID, GSAB_CLIENT_SECRET, GSAB_REFRESH_TOKEN }   (secrets!)
+npx gsab-js env
+# GSAB_CREDENTIALS=…   ← set this single value in your host's secret store
 ```
 
 ```js
@@ -119,8 +119,15 @@ import { refreshTokenAuth } from "gsab-js/node";
 const db = connect({ spreadsheetId, auth: refreshTokenAuth() }).sheet(schema);
 ```
 
-The default scope is `drive.file` — the token can only touch sheets gsab created. This is
-exactly how [the live demo](/demo) runs: public no-auth reads in the visitor's browser, and
+Debugging a deployment? Run `npx gsab-js doctor` in that environment — it names anything
+missing and performs a real token refresh. Prefer separate variables? `npx gsab-js env
+--split` prints the `GSAB_CLIENT_ID` / `GSAB_CLIENT_SECRET` / `GSAB_REFRESH_TOKEN` trio,
+which `refreshTokenAuth()` also accepts.
+
+**If the credential leaks:** its scope is `drive.file` — it can only touch sheets gsab
+created, never the rest of your Drive — and you can revoke it any time at
+myaccount.google.com → Security → Third-party access. This is exactly how
+[the live demo](/demo) runs: public no-auth reads in the visitor's browser, and
 `refreshTokenAuth()` writes inside Next.js route handlers.
 
 ## Browser sign-in
