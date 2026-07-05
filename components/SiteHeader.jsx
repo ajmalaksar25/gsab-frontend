@@ -16,6 +16,7 @@ export default function SiteHeader() {
         </a>
         <nav className="site-nav">
           <a href="/docs">Docs</a>
+          <a href="/demo">Demo</a>
           <a className="hide-sm" href="/#features">Features</a>
           <a className="hide-sm" href="/#start">Quickstart</a>
           <a href={GITHUB} target="_blank" rel="noreferrer">
