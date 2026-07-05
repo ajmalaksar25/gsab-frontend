@@ -1778,3 +1778,23 @@ section {
 }
 
 .btn .demo-live__dot { margin-right: 4px; flex: none; }
+
+/* hero live-sheet caption */
+.gs__live {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: color 0.2s var(--ease);
+}
+.gs__live:hover { color: var(--emerald); }
+.gs__live-dot--warming { background: var(--ink-3); animation: none; }
+
+/* /demo code editor block */
+.demo-editor { margin-top: 14px; }
+.demo-editor pre { overflow-x: auto; }

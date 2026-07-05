@@ -2,39 +2,8 @@ import Reveal from "../components/Reveal";
 import CopyButton from "../components/CopyButton";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
+import HeroSheet from "../components/HeroSheet";
 import { GITHUB } from "../lib/links";
-
-/* ---- hero sheet data ---- */
-const FIELDS = ["id", "name", "email", "plan", "secret"];
-const ROWS = [
-  ["101", "Ada Lovelace", "ada@calc.org", "pro", "••••••"],
-  ["102", "Alan Turing", "alan@enigma.io", "free", "••••••"],
-  ["103", "Grace Hopper", "grace@navy.mil", "pro", "••••••"],
-  ["104", "Katherine Johnson", "kj@nasa.gov", "pro", "••••••"],
-  ["105", "Linus Torvalds", "linus@kernel.org", "free", "••••••"],
-  ["106", "Margaret Hamilton", "mh@mit.edu", "team", "••••••"],
-];
-
-function buildCells() {
-  const letters = ["A", "B", "C", "D", "E"];
-  const out = [{ cls: "gcell gcell--corner", t: "" }];
-  letters.forEach((l) => out.push({ cls: "gcell gcell--colhead", t: l }));
-  out.push({ cls: "gcell gcell--rownum", t: "1" });
-  FIELDS.forEach((f) =>
-    out.push({ cls: "gcell gcell--field", t: f, lock: f === "secret" })
-  );
-  ROWS.forEach((row, ri) => {
-    out.push({ cls: "gcell gcell--rownum", t: String(ri + 2) });
-    row.forEach((v, ci) => {
-      let cls = "gcell gcell--val";
-      if (ci === 4) cls = "gcell gcell--enc";
-      if (ci === 3 && ri === 0) cls = "gcell gcell--val gcell--active";
-      out.push({ cls, t: v });
-    });
-  });
-  return out;
-}
-const CELLS = buildCells();
 
 /* ---- feature tiles ---- */
 const TILES = [
@@ -151,39 +120,8 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="hero__visual" aria-hidden="true">
-              <div className="gs">
-                <div className="gs__chrome">
-                  <span className="gs__dots">
-                    <i />
-                    <i />
-                    <i />
-                  </span>
-                  <span className="gs__title">My App DB</span>
-                  <span className="gs__scope">drive.file</span>
-                </div>
-                <div className="gs__tabs">
-                  <span className="is-active">users</span>
-                  <span>plans</span>
-                  <span className="gs__tabadd">+</span>
-                </div>
-                <div className="gs__formula">
-                  <span className="gs__fx">fx</span>
-                  <code>{'db.read({ "plan": "pro" })'}</code>
-                </div>
-                <div className="gs__grid">
-                  {CELLS.map((c, i) => (
-                    <div
-                      key={i}
-                      className={c.cls}
-                      style={{ animationDelay: `${0.1 + i * 0.011}s` }}
-                    >
-                      {c.t}
-                      {c.lock ? <span className="gs__lock"> ⊟</span> : null}
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="hero__visual">
+              <HeroSheet />
             </div>
           </div>
         </section>
