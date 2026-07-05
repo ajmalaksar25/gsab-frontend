@@ -656,9 +656,16 @@ that runs in the **browser and Node**. TypeScript types included.
 npm install gsab-js
 ```
 
-> Early (`0.2.x`) and moving fast. `watch()`, `createCache()` and `useSheet()` are
-> **Experimental** — the API may change. See it running: [the live demo](/demo) is built on
-> exactly what's below.
+> **Work in progress — the core is here, the rest is coming.** gsab-js (`0.2.x`) focuses on
+> the main functionality first: no-auth reads and queries, `watch()`, Node CRUD, the reactive
+> cache, React bindings and serverless deploy auth — enough to build and ship a real app
+> (like [the live demo](/demo), which runs entirely on it). Python-parity features are on the
+> way next: field **encryption**, **charts**, **access policies** and the **MCP server**.
+> `watch()`, `createCache()` and `useSheet()` are Experimental — the API may change.
+> You're not building blind meanwhile: there's a bundled
+> [agent skill](https://github.com/ajmalaksar25/gsab-js#teach-your-coding-agent) for your
+> coding agent, and this page has a [raw-markdown twin](/docs/javascript.md) and lives in
+> [llms.txt](/llms.txt) for easy reference.
 
 ## Read a public sheet — no auth, no API key
 

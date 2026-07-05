@@ -69,6 +69,7 @@ export default function TeamDirectory() {
       {loading ? (
         <p className="demo-loading">Reading the sheet…</p>
       ) : (
+        <div className="demo-table-wrap">
         <table className="demo-table">
           <thead>
             <tr>
@@ -130,6 +131,7 @@ export default function TeamDirectory() {
             )}
           </tbody>
         </table>
+        </div>
       )}
 
       <form className="demo-add" onSubmit={add}>
