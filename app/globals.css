@@ -1778,3 +1778,110 @@ section {
 }
 
 .btn .demo-live__dot { margin-right: 4px; flex: none; }
+
+/* hero live-sheet caption */
+.gs__live {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: color 0.2s var(--ease);
+}
+.gs__live:hover { color: var(--emerald); }
+.gs__live-dot--warming { background: var(--ink-3); animation: none; }
+
+/* /demo code editor block */
+.demo-editor { margin-top: 14px; }
+.demo-editor pre { overflow-x: auto; }
+
+/* language tabs (CodeTabs) + editor-in-docs fixes */
+.doc-sec .editor code,
+.editor pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  font-size: inherit;
+  overflow-wrap: normal;
+}
+.demo-editor pre { margin: 0; }
+
+.lang-tabs__bar {
+  display: inline-flex;
+  gap: 4px;
+  margin: 14px 0 -6px;
+}
+.lang-tab {
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  padding: 4px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.lang-tab:hover { color: var(--ink); }
+.lang-tab.is-active {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: #fff;
+}
+
+.lang-tabs__bar--chrome { margin: 0 0 0 auto; }
+.lang-tabs__bar--chrome .lang-tab {
+  border-color: var(--panel-line);
+  color: var(--panel-mute);
+}
+.lang-tabs__bar--chrome .lang-tab:hover { color: var(--panel-text); }
+.lang-tabs__bar--chrome .lang-tab.is-active {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: #fff;
+}
+
+/* ============================================================
+   mobile refinements — header, hero sheet, demo table, editors
+   ============================================================ */
+
+.demo-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 700px) {
+  .site-head__inner { gap: 10px; }
+  .site-nav { gap: 13px; font-size: 0.88rem; }
+  .themetoggle { padding: 5px 10px; }
+
+  /* the hero mini-sheet swipes sideways like a real sheet instead of clipping cells */
+  .gs__grid {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    grid-template-columns: 32px 44px minmax(120px, 1.4fr) minmax(170px, 1.5fr) minmax(78px, 0.8fr) minmax(88px, 0.9fr);
+  }
+  .gcell { padding: 8px 10px; }
+  .gs__formula code { font-size: 0.72rem; }
+
+  .demo-card { padding: 14px 12px 16px; }
+  .demo-table { min-width: 560px; }
+  .demo-table td,
+  .demo-table th { padding: 8px 8px; }
+  .demo-toolbar { font-size: 0.8rem; gap: 10px; }
+
+  .editor__bar { flex-wrap: wrap; row-gap: 6px; }
+  .editor pre code { font-size: 0.74rem; }
+  .lang-tabs__bar--chrome { margin-left: 0; }
+}
+
+/* grid items must not inherit the mini-sheet's min-content width */
+.hero__grid > * { min-width: 0; }
+
+.site-nav a { white-space: nowrap; }

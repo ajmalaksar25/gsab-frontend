@@ -44,6 +44,7 @@ export default function TeamDirectory() {
   }
 
   const sorted = [...rows].sort((a, b) => Number(a.id) - Number(b.id));
+  const active = sorted.filter((r) => String(r.status) === "active").length;
 
   return (
     <div className="demo-card">
@@ -52,7 +53,9 @@ export default function TeamDirectory() {
           <span className="demo-live__dot" />
           {error ? "sheet unreachable — showing last known rows" : "live from Google Sheets"}
         </span>
-        <span className="demo-count">{loading ? "…" : `${sorted.length} people`}</span>
+        <span className="demo-count">
+          {loading ? "…" : `${sorted.length} people · ${active} active`}
+        </span>
         <a href={DEMO_SHEET_URL} target="_blank" rel="noreferrer">
           open the actual sheet ↗
         </a>
@@ -66,6 +69,7 @@ export default function TeamDirectory() {
       {loading ? (
         <p className="demo-loading">Reading the sheet…</p>
       ) : (
+        <div className="demo-table-wrap">
         <table className="demo-table">
           <thead>
             <tr>
@@ -127,6 +131,7 @@ export default function TeamDirectory() {
             )}
           </tbody>
         </table>
+        </div>
       )}
 
       <form className="demo-add" onSubmit={add}>
