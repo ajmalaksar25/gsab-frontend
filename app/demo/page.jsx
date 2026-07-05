@@ -1,9 +1,10 @@
 import SiteHeader from "../../components/SiteHeader";
 import SiteFooter from "../../components/SiteFooter";
 import TeamDirectory from "../../components/TeamDirectory";
+import CodeTabs from "../../components/CodeTabs";
 import { DEMO_SHEET_URL } from "../../lib/demo-shared";
 
-const demoCode = `<span class="tok-com">// in your browser — no auth, it's a public sheet</span>
+const jsCode = `<span class="tok-com">// in your browser — no auth, it's a public sheet</span>
 <span class="tok-key">import</span> { connect } <span class="tok-key">from</span> <span class="tok-str">"gsab-js"</span>;
 <span class="tok-key">import</span> { useSheet } <span class="tok-key">from</span> <span class="tok-str">"gsab-js/react"</span>;
 
@@ -14,6 +15,23 @@ const demoCode = `<span class="tok-com">// in your browser — no auth, it's a p
 <span class="tok-key">import</span> { refreshTokenAuth } <span class="tok-key">from</span> <span class="tok-str">"gsab-js/node"</span>;
 <span class="tok-key">const</span> db = <span class="tok-fn">connect</span>({ spreadsheetId, auth: <span class="tok-fn">refreshTokenAuth</span>() }).<span class="tok-fn">sheet</span>(schema);
 <span class="tok-key">await</span> db.<span class="tok-fn">insert</span>({ id: 5, name: <span class="tok-str">"You"</span>, email: <span class="tok-str">"you@example.com"</span> });`;
+
+const pyCode = `<span class="tok-com"># the same sheet, from Python — pip install gsab · gsab auth login</span>
+<span class="tok-key">import</span> asyncio
+<span class="tok-key">from</span> gsab <span class="tok-key">import</span> SheetConnection, SheetManager, Schema, Field, FieldType
+
+schema = <span class="tok-fn">Schema</span>(<span class="tok-str">"team"</span>, [
+    <span class="tok-fn">Field</span>(<span class="tok-str">"id"</span>, FieldType.INTEGER, required=<span class="tok-key">True</span>, unique=<span class="tok-key">True</span>),
+    <span class="tok-fn">Field</span>(<span class="tok-str">"name"</span>, FieldType.STRING, required=<span class="tok-key">True</span>),
+    <span class="tok-fn">Field</span>(<span class="tok-str">"email"</span>, FieldType.STRING, required=<span class="tok-key">True</span>),
+])
+
+<span class="tok-key">async def</span> <span class="tok-fn">main</span>():
+    db = <span class="tok-fn">SheetManager</span>(SheetConnection(), schema)
+    <span class="tok-key">await</span> db.<span class="tok-fn">insert</span>({<span class="tok-str">"id"</span>: 5, <span class="tok-str">"name"</span>: <span class="tok-str">"You"</span>, <span class="tok-str">"email"</span>: <span class="tok-str">"you@example.com"</span>})
+    <span class="tok-mut">print</span>(<span class="tok-key">await</span> db.<span class="tok-fn">read</span>({<span class="tok-str">"status"</span>: <span class="tok-str">"active"</span>}))
+
+asyncio.<span class="tok-fn">run</span>(main())`;
 
 export const metadata = {
   title: "Live demo — GSAB",
@@ -47,17 +65,21 @@ export default function Demo() {
 
           <section className="doc-sec">
             <h2>What this page actually runs</h2>
-            <div className="editor editor--wide demo-editor">
-              <div className="editor__bar">
-                <i />
-                <i />
-                <i />
-                <span className="editor__file">TeamDirectory.jsx</span>
-              </div>
-              <pre>
-                <code dangerouslySetInnerHTML={{ __html: demoCode }} />
-              </pre>
-            </div>
+            <CodeTabs
+              chrome
+              tabs={[
+                { label: "JavaScript", file: "TeamDirectory.jsx" },
+                { label: "Python", file: "team_directory.py" },
+              ]}
+              panels={[
+                <pre key="js">
+                  <code dangerouslySetInnerHTML={{ __html: jsCode }} />
+                </pre>,
+                <pre key="py">
+                  <code dangerouslySetInnerHTML={{ __html: pyCode }} />
+                </pre>,
+              ]}
+            />
             <p>
               Try it yourself: <code>npm install gsab-js</code> —{" "}
               <a href="https://www.npmjs.com/package/gsab-js" target="_blank" rel="noreferrer">

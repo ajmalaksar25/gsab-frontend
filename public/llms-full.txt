@@ -174,7 +174,7 @@ rows = await db.read()
 
 # CRUD
 
-A `SheetManager` binds a connection to a schema and gives you async create / read / update / delete.
+A `SheetManager` binds a connection to a schema and gives you async create / read / update / delete. Samples are shown in Python and JavaScript ([gsab-js](/docs/javascript)) — pick your language once and every block on the site follows.
 
 ```python
 from gsab import SheetManager
@@ -195,6 +195,25 @@ await db.delete({"plan": "free"})                   # returns rows deleted
 
 await db.rename_sheet("New title")
 await db.delete_sheet()                             # remove the whole spreadsheet
+```
+
+```js
+import { connect } from "gsab-js";
+import { loopbackAuth } from "gsab-js/node";
+
+const db = connect({ auth: await loopbackAuth() }).sheet(schema);
+const sheetId = await db.createSheet("My App DB"); // creates the spreadsheet, returns its id
+
+await db.insert({ id: 101, name: "Ada", email: "ada@calc.org" });
+await db.bulkInsert([{ /* … */ }, { /* … */ }]);   // many rows in one append; returns count
+
+// read everything, or filter:
+let rows = await db.read();
+rows = await db.read({ plan: "pro" });                  // equality
+rows = await db.read({ name: { $regex: "Ada" } });      // operator
+
+await db.update({ id: 101 }, { plan: "team" });         // returns rows changed
+await db.delete({ plan: "free" });                      // returns rows deleted
 ```
 
 `read()` returns a list of dicts keyed by field name, with values in their schema types (no internal bookkeeping fields leak out). `update()` and `delete()` return how many rows matched; `delete()` uses each row's true sheet index, so duplicate rows are handled correctly. `update()` writes only the cells you changed (not the whole row), so a concurrent edit to a *different* field of the same row isn't clobbered.
@@ -220,6 +239,24 @@ await db.bulk_upsert([{"id": 1, "plan": "pro"}, {"id": 3, "name": "Eve"}])
 # -> {"inserted": 1, "updated": 1}
 ```
 
+```js
+const schema = {
+  name: "users",
+  fields: {
+    id: { type: "integer", primaryKey: true },  // the key upsert matches on
+    name: { type: "string" },
+    plan: { type: "string", default: "free" },
+  },
+};
+const db = connect({ auth }).sheet(schema);
+
+await db.insert({ id: 1, name: "Ada", plan: "pro" });
+await db.upsert({ id: 1, plan: "free" });   // -> "updated"  (name "Ada" is kept)
+await db.upsert({ id: 2, name: "Lin" });    // -> "inserted"
+// match on another column instead of the primary key:
+await db.upsert({ email: "ada@calc.org", plan: "pro" }, { key: "email" });
+```
+
 `upsert()` returns `"inserted"` or `"updated"`; `bulk_upsert()` returns `{"inserted": n, "updated": m}`. Both default to the schema's primary key — pass `key="field"` to match on another column instead.
 
 A `primary_key` / `unique` field is **enforced**: a plain `insert()` of a key that already exists raises `DuplicateKeyError`. Use `upsert()` when you want insert-or-update instead.
@@ -234,6 +271,14 @@ Turn a sheet you created into a read-only public link with one call — handy fo
 url = await db.share()        # anyone with the link can view; returns the URL
 db.csv_url                    # CSV-export URL — pandas.read_csv(db.csv_url) once shared
 await db.unshare()            # revoke public access
+```
+
+```js
+const url = await db.share(); // anyone with the link can view; returns the URL
+await db.unshare();           // revoke public access
+// once shared, ANY browser can read it with zero auth:
+const publicDb = connect(url).sheet();
+const rows = await publicDb.read();
 ```
 
 `share(role=...)` takes `reader` (default), `commenter` or `writer` — `writer` lets anyone with the link edit, so use it with care (the Sheets UI term *editor* is an alias). An [`AccessPolicy`](/docs/access-control) can cap how high the role may go. Sharing only works for sheets **GSAB created**, not a user's pre-existing sheets; revocation is immediate at the permission level, though Google's public export cache can lag for a short while.

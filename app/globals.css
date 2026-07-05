@@ -1798,3 +1798,51 @@ section {
 /* /demo code editor block */
 .demo-editor { margin-top: 14px; }
 .demo-editor pre { overflow-x: auto; }
+
+/* language tabs (CodeTabs) + editor-in-docs fixes */
+.doc-sec .editor code,
+.editor pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  font-size: inherit;
+  overflow-wrap: normal;
+}
+.demo-editor pre { margin: 0; }
+
+.lang-tabs__bar {
+  display: inline-flex;
+  gap: 4px;
+  margin: 14px 0 -6px;
+}
+.lang-tab {
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  padding: 4px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+.lang-tab:hover { color: var(--ink); }
+.lang-tab.is-active {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: #fff;
+}
+
+.lang-tabs__bar--chrome { margin: 0 0 0 auto; }
+.lang-tabs__bar--chrome .lang-tab {
+  border-color: var(--panel-line);
+  color: var(--panel-mute);
+}
+.lang-tabs__bar--chrome .lang-tab:hover { color: var(--panel-text); }
+.lang-tabs__bar--chrome .lang-tab.is-active {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: #fff;
+}
